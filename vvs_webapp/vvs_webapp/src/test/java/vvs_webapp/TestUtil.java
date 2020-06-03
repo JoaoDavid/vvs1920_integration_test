@@ -83,20 +83,13 @@ public class TestUtil {
 	}
 	
 	public void removeCustomer(String vat) throws IOException {
-		// get a specific link
 		HtmlAnchor removeCustomerLink = page.getAnchorByHref("RemoveCustomerPageController");
-		// click on it
 		HtmlPage nextPage = (HtmlPage) removeCustomerLink.openLinkInNewWindow();
-		// check if title is the one expected
-		assertEquals("Enter VatNumber", nextPage.getTitleText());
-
-		// get the page first form:
+		assertTrue(nextPage.asText().contains(vat));
+		
 		HtmlForm removeCustomerForm = nextPage.getForms().get(0);
-
-		// place data at form
 		HtmlInput vatInput = removeCustomerForm.getInputByName("vat");
 		vatInput.setValueAttribute(vat);
-		// submit form
 		HtmlInput submit = removeCustomerForm.getInputByName("submit");
 		submit.click();
 	}
