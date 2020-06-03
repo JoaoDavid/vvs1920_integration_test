@@ -81,6 +81,25 @@ public class TestUtil {
 		assertTrue(textReportPage.contains(postalCode));
 		assertTrue(textReportPage.contains(locality));
 	}
+	
+	public void removeCustomer(String vat) throws IOException {
+		// get a specific link
+		HtmlAnchor removeCustomerLink = page.getAnchorByHref("RemoveCustomerPageController");
+		// click on it
+		HtmlPage nextPage = (HtmlPage) removeCustomerLink.openLinkInNewWindow();
+		// check if title is the one expected
+		assertEquals("Enter VatNumber", nextPage.getTitleText());
+
+		// get the page first form:
+		HtmlForm removeCustomerForm = nextPage.getForms().get(0);
+
+		// place data at form
+		HtmlInput vatInput = removeCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+		// submit form
+		HtmlInput submit = removeCustomerForm.getInputByName("submit");
+		submit.click();
+	}
 
 
 
