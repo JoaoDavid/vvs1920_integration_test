@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
 
 public class TestUtil {
 
@@ -91,6 +94,44 @@ public class TestUtil {
 		HtmlInput vatInput = removeCustomerForm.getInputByName("vat");
 		vatInput.setValueAttribute(vat);
 		HtmlInput submit = removeCustomerForm.getInputByName("submit");
+		submit.click();
+	}
+	
+	public HtmlTable getCustomerAddresses(String vat) throws IOException {
+		HtmlAnchor findCustomerLink = page.getAnchorByHref("getCustomerByVAT.html");
+		HtmlPage nextPage = (HtmlPage) findCustomerLink.openLinkInNewWindow();
+		// get the page first form:
+		HtmlForm findCustomerForm = nextPage.getForms().get(0);
+
+		// place data at form
+		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+		// submit form
+		HtmlInput submit = findCustomerForm.getInputByName("submit");
+		HtmlPage reportPage = submit.click();
+		System.out.println(reportPage.asText());
+		return null;//TODO
+	}
+	
+	public void addSale(String vat) throws IOException {
+		// get a specific link
+		HtmlAnchor addSaleLink = page.getAnchorByHref("addSale.html");
+		// click on it
+		HtmlPage nextPage = (HtmlPage) addSaleLink.openLinkInNewWindow();
+		// check if title is the one expected
+		assertEquals("New Sale", nextPage.getTitleText());
+
+		// get the page first form:
+		HtmlForm addSaleForm = nextPage.getForms().get(0);
+
+		// place data at form
+		HtmlInput vatInput = addSaleForm.getInputByName("customerVat");
+		vatInput.setValueAttribute(vat);
+		
+		// submit form
+		HtmlInput submit = addSaleForm.getInputByValue("Add Sale");
+
+		// check if report page includes the proper values
 		submit.click();
 	}
 
