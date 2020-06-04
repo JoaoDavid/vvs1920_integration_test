@@ -126,19 +126,19 @@ public class TestUtil {
 	}
 
 	public HtmlTable getCustomerSales(String vat) throws IOException {
-		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "getCustomerByVAT.html");
+		HtmlPage page = webClient.getPage(APPLICATION_URL + "getSales.html");
 		// get the page first form:
-		HtmlForm findCustomerForm = nextPage.getForms().get(0);
+		HtmlForm findCustomerForm = page.getForms().get(0);
 
 		// place data at form
-		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
+		HtmlInput vatInput = findCustomerForm.getInputByName("customerVat");
 		vatInput.setValueAttribute(vat);
 
 		// submit form
-		HtmlInput submit = findCustomerForm.getInputByName("submit");
+		HtmlInput submit = findCustomerForm.getInputByValue("Get Sales");
 		HtmlPage reportPage = submit.click();
-		System.out.println(reportPage.asText());
-		return (HtmlTable) reportPage.getElementById("addresses");
+		HtmlTable table = (HtmlTable) reportPage.getElementById("sales");
+		return table;
 	}
 
 
