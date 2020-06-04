@@ -16,142 +16,129 @@ public class TestUtil {
 	private static final String APPLICATION_URL = "http://localhost:8080/VVS_webappdemo/";
 
 	private WebClient webClient;	
-	
+
 	public TestUtil(WebClient webClient) {
 		this.webClient = webClient;
 	}
 
 	public void addCustomer(String vat, String desig, String phone) throws IOException {
-		//try(WebClient webClient = new WebClient()){
-			HtmlPage page = webClient.getPage(APPLICATION_URL + "addCustomer.html");
-			// check if title is the one expected
-			assertEquals("Enter Name", page.getTitleText());
+		HtmlPage page = webClient.getPage(APPLICATION_URL + "addCustomer.html");
+		// check if title is the one expected
+		assertEquals("Enter Name", page.getTitleText());
 
-			// get the page first form:
-			HtmlForm addCustomerForm = page.getForms().get(0);
+		// get the page first form:
+		HtmlForm addCustomerForm = page.getForms().get(0);
 
-			// place data at form
-			HtmlInput vatInput = addCustomerForm.getInputByName("vat");
-			vatInput.setValueAttribute(vat);
-			HtmlInput designationInput = addCustomerForm.getInputByName("designation");
-			designationInput.setValueAttribute(desig);
-			HtmlInput phoneInput = addCustomerForm.getInputByName("phone");
-			phoneInput.setValueAttribute(phone);
-			// submit form
-			HtmlInput submit = addCustomerForm.getInputByName("submit");
+		// place data at form
+		HtmlInput vatInput = addCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+		HtmlInput designationInput = addCustomerForm.getInputByName("designation");
+		designationInput.setValueAttribute(desig);
+		HtmlInput phoneInput = addCustomerForm.getInputByName("phone");
+		phoneInput.setValueAttribute(phone);
+		// submit form
+		HtmlInput submit = addCustomerForm.getInputByName("submit");
 
-			// check if report page includes the proper values
-			HtmlPage reportPage = submit.click();
-			String textReportPage = reportPage.asText();
-			assertTrue(textReportPage.contains(desig));
-			assertTrue(textReportPage.contains(phone));
-		//}
+		// check if report page includes the proper values
+		HtmlPage reportPage = submit.click();
+		String textReportPage = reportPage.asText();
+		assertTrue(textReportPage.contains(desig));
+		assertTrue(textReportPage.contains(phone));
+
 	}
 
 	public void addAddress(String vat, String address, String door, String postalCode, String locality) throws IOException {
-		//try(WebClient webClient = new WebClient()){
-			HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "addAddressToCustomer.html");
-			// check if title is the one expected
-			assertEquals("Enter Address", nextPage.getTitleText());
+		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "addAddressToCustomer.html");
+		// check if title is the one expected
+		assertEquals("Enter Address", nextPage.getTitleText());
 
-			// get the page first form:
-			HtmlForm addAddressForm = nextPage.getForms().get(0);
+		// get the page first form:
+		HtmlForm addAddressForm = nextPage.getForms().get(0);
 
-			// place data at form
-			HtmlInput vatInput = addAddressForm.getInputByName("vat");
-			vatInput.setValueAttribute(vat);
-			HtmlInput addressInput = addAddressForm.getInputByName("address");
-			addressInput.setValueAttribute(address);
-			HtmlInput doorInput = addAddressForm.getInputByName("door");
-			doorInput.setValueAttribute(door);
-			HtmlInput postalCodeInput = addAddressForm.getInputByName("postalCode");
-			postalCodeInput.setValueAttribute(postalCode);
-			HtmlInput localityInput = addAddressForm.getInputByName("locality");
-			localityInput.setValueAttribute(locality);
-			// submit form
-			HtmlInput submit = addAddressForm.getInputByValue("Insert");
+		// place data at form
+		HtmlInput vatInput = addAddressForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+		HtmlInput addressInput = addAddressForm.getInputByName("address");
+		addressInput.setValueAttribute(address);
+		HtmlInput doorInput = addAddressForm.getInputByName("door");
+		doorInput.setValueAttribute(door);
+		HtmlInput postalCodeInput = addAddressForm.getInputByName("postalCode");
+		postalCodeInput.setValueAttribute(postalCode);
+		HtmlInput localityInput = addAddressForm.getInputByName("locality");
+		localityInput.setValueAttribute(locality);
+		// submit form
+		HtmlInput submit = addAddressForm.getInputByValue("Insert");
 
-			// check if report page includes the proper values
-			submit.click();
-		//}
+		// check if report page includes the proper values
+		submit.click();
 	}
 
 	public void removeCustomer(String vat) throws IOException {
-		//try(WebClient webClient = new WebClient()){
-			HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "RemoveCustomerPageController");
-			assertTrue(nextPage.asText().contains(vat));
+		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "RemoveCustomerPageController");
+		assertTrue(nextPage.asText().contains(vat));
 
-			HtmlForm removeCustomerForm = nextPage.getForms().get(0);
-			HtmlInput vatInput = removeCustomerForm.getInputByName("vat");
-			vatInput.setValueAttribute(vat);
-			HtmlInput submit = removeCustomerForm.getInputByName("submit");
-			submit.click();
-		//}
+		HtmlForm removeCustomerForm = nextPage.getForms().get(0);
+		HtmlInput vatInput = removeCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+		HtmlInput submit = removeCustomerForm.getInputByName("submit");
+		submit.click();
 	}
 
 	public HtmlTable getCustomerAddresses(String vat) throws IOException {
-		//try(WebClient webClient = new WebClient()){
-			HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "getCustomerByVAT.html");
-			// get the page first form:
-			HtmlForm findCustomerForm = nextPage.getForms().get(0);
+		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "getCustomerByVAT.html");
+		// get the page first form:
+		HtmlForm findCustomerForm = nextPage.getForms().get(0);
 
-			// place data at form
-			HtmlInput vatInput = findCustomerForm.getInputByName("vat");
-			vatInput.setValueAttribute(vat);
-			
-			// submit form
-			HtmlInput submit = findCustomerForm.getInputByName("submit");
-			HtmlPage reportPage = submit.click();
-			HtmlTable table = (HtmlTable) reportPage.getElementById("addresses");
-			return table;
-		//}
+		// place data at form
+		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+
+		// submit form
+		HtmlInput submit = findCustomerForm.getInputByName("submit");
+		HtmlPage reportPage = submit.click();
+		HtmlTable table = (HtmlTable) reportPage.getElementById("addresses");
+		return table;
 	}
-	
+
 	public HtmlTable getCustomers() throws IOException {
-		//try(WebClient webClient = new WebClient()){
-			HtmlPage page = webClient.getPage(APPLICATION_URL + "GetAllCustomersPageController");	
-			final HtmlTable table = page.getHtmlElementById("clients");
-			return table;
-		//}
+		HtmlPage page = webClient.getPage(APPLICATION_URL + "GetAllCustomersPageController");	
+		final HtmlTable table = page.getHtmlElementById("clients");
+		return table;
 	}
 
 	public void addSale(String vat) throws IOException {
-		//try(WebClient webClient = new WebClient()){
-			HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "addSale.html");
-			// check if title is the one expected
-			assertEquals("New Sale", nextPage.getTitleText());
+		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "addSale.html");
+		// check if title is the one expected
+		assertEquals("New Sale", nextPage.getTitleText());
 
-			// get the page first form:
-			HtmlForm addSaleForm = nextPage.getForms().get(0);
+		// get the page first form:
+		HtmlForm addSaleForm = nextPage.getForms().get(0);
 
-			// place data at form
-			HtmlInput vatInput = addSaleForm.getInputByName("customerVat");
-			vatInput.setValueAttribute(vat);
+		// place data at form
+		HtmlInput vatInput = addSaleForm.getInputByName("customerVat");
+		vatInput.setValueAttribute(vat);
 
-			// submit form
-			HtmlInput submit = addSaleForm.getInputByValue("Add Sale");
+		// submit form
+		HtmlInput submit = addSaleForm.getInputByValue("Add Sale");
 
-			// check if report page includes the proper values
-			submit.click();
-		//}
+		// check if report page includes the proper values
+		submit.click();
 	}
 
 	public HtmlTable getCustomerSales(String vat) throws IOException {
-		//try(WebClient webClient = new WebClient()){
-			HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "getCustomerByVAT.html");
-			// get the page first form:
-			HtmlForm findCustomerForm = nextPage.getForms().get(0);
+		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "getCustomerByVAT.html");
+		// get the page first form:
+		HtmlForm findCustomerForm = nextPage.getForms().get(0);
 
-			// place data at form
-			HtmlInput vatInput = findCustomerForm.getInputByName("vat");
-			vatInput.setValueAttribute(vat);
-			
-			// submit form
-			HtmlInput submit = findCustomerForm.getInputByName("submit");
-			HtmlPage reportPage = submit.click();
-			System.out.println(reportPage.asText());
-			return (HtmlTable) reportPage.getElementById("addresses");
-		//}
+		// place data at form
+		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+
+		// submit form
+		HtmlInput submit = findCustomerForm.getInputByName("submit");
+		HtmlPage reportPage = submit.click();
+		System.out.println(reportPage.asText());
+		return (HtmlTable) reportPage.getElementById("addresses");
 	}
 
 
