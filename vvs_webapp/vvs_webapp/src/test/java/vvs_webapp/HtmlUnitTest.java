@@ -25,7 +25,7 @@ public class HtmlUnitTest {
 		webClient = new WebClient();
 		util = new TestUtil(webClient);
 	}
-	
+
 	@After
 	public void tearDownClass() throws Exception {
 		webClient.close();
@@ -124,8 +124,8 @@ public class HtmlUnitTest {
 		util.removeCustomer(vat2);
 	}
 
-	//@Test
-	public void narrativeC() throws IOException {
+	@Test
+	public void narrativeC() throws IOException {		
 		//Set Up
 		final String vat = "244377090";
 		final String desig = "José";
@@ -133,6 +133,12 @@ public class HtmlUnitTest {
 		util.addCustomer(vat, desig, phone);
 		//Add sale
 		util.addSale(vat);
+		final HtmlTable tableAfter = util.getCustomerSales(vat);
+		int indexLatest = tableAfter.getRows().size() - 1;
+		HtmlTableRow row = tableAfter.getRows().get(indexLatest);
+		assertEquals("O", row.getCell(3).asText());
+		// Tear down
+		util.removeCustomer(vat);
 	}
 
 

@@ -20,7 +20,7 @@
 <br>
 <br>
 <c:if test = "${salesHelper.getSales().size() > 0}">
-    <table class="w3-table w3-bordered">
+    <table id="sales" class="w3-table w3-bordered">
 	   <tr class="w3-black">
 		<th>Id</th>
 		<th>Date</th>
