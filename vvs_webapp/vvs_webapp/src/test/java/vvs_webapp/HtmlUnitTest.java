@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,6 +13,9 @@ import org.junit.Test;
 
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 
@@ -37,19 +42,6 @@ public class HtmlUnitTest {
 	@After
 	public void tearDownClass() throws Exception {
 		webClient.close();
-	}
-
-	//@Test
-	public void myTest() throws Exception {
-		final String vat = "244377090";
-		util.addCustomer(vat, "batata assada", "918576089");
-		util.addAddress(vat, "rua da batata", "9", "4242-225", "lisboa");
-		HtmlTable tableAfter = util.getCustomerAddresses(vat);
-		for (final HtmlTableRow row : tableAfter.getRows()) {
-			System.out.println(row.asText());
-		}
-		util.addSale(vat);
-		//util.removeCustomer(vat);
 	}
 
 	@Test
@@ -142,7 +134,7 @@ public class HtmlUnitTest {
 		util.addSale(vat);
 		final HtmlTable tableAfter = util.getCustomerSales(vat);
 		int indexLatest = tableAfter.getRows().size() - 1;
-		HtmlTableRow row = tableAfter.getRows().get(indexLatest);
+		HtmlTableRow row = tableAfter.getRow(indexLatest);
 		assertEquals("O", row.getCell(3).asText());
 		// Tear down
 		util.removeCustomer(vat);
@@ -159,19 +151,74 @@ public class HtmlUnitTest {
 		//Close the sale		
 		final HtmlTable table = util.getCustomerSales(vat);
 		int indexLatest = table.getRows().size() - 1;
-		HtmlTableRow row = table.getRows().get(indexLatest);		
+		HtmlTableRow row = table.getRow(indexLatest);		
 		util.closeSale(row.getCell(0).asText());
 		//Assert that the sale is closed
 		final HtmlTable tableAfter = util.getCustomerSales(vat);
-		HtmlTableRow rowAfter = tableAfter.getRows().get(indexLatest);		
+		HtmlTableRow rowAfter = tableAfter.getRow(indexLatest);		
 		assertEquals("C", rowAfter.getCell(3).asText());
 		// Tear down
 		util.removeCustomer(vat);
 	}
+	
+	@Test
+	public void narrativeE() throws IOException {
+		// Add Customer
+		final String vat = "244377090";
+		util.addCustomer(vat, "José", "910576931");
+		final String address1 = "Rua Augusta";
+		final String door1 = "9";
+		final String postalCode1 = "1100-048";
+		final String locality1 = "Lisboa";
+		util.addAddress(vat, address1, door1, postalCode1, locality1);
+		// Add Sale
+		util.addSale(vat);
+		final HtmlTable table = util.getCustomerSales(vat);
+		int indexLatest = table.getRows().size() - 1;
+		HtmlTableRow row = table.getRow(indexLatest);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd"); 
+		assertEquals(formatter.format(LocalDate.now()), row.getCell(1).asText());
+		assertEquals("0.0", row.getCell(2).asText());
+		assertEquals("O", row.getCell(3).asText());
+		assertEquals(vat, row.getCell(4).asText());
+		
+		//Insert delivery
+		HtmlPage page = webClient.getPage(APPLICATION_URL + "saleDeliveryVat.html");
+		// get the page first form:
+		HtmlForm findCustomerForm = page.getForms().get(0);
+		// place data at form
+		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+		// submit form
+		HtmlInput submit = findCustomerForm.getInputByValue("Get Customer");
+		HtmlPage reportPage = submit.click();
+		
+		HtmlTable tableAddresses = (HtmlTable) reportPage.getElementById("addresses");
+		String addressId = tableAddresses.getRow(1).getCell(0).asText();
+		
+		HtmlTable tableSales = (HtmlTable) reportPage.getElementById("addresses");
+		String saleId = tableSales.getRow(1).getCell(0).asText();
+		
+		HtmlForm addSaleDeliveryForm = reportPage.getForms().get(0);
+		HtmlInput addressInput = addSaleDeliveryForm.getInputByName("addr_id");
+		addressInput.setValueAttribute(addressId);
+		HtmlInput saleInput = addSaleDeliveryForm.getInputByName("sale_id");
+		saleInput.setValueAttribute(saleId);
+		
+		HtmlInput submitNext = addSaleDeliveryForm.getInputByValue("Insert");
+		HtmlPage finalPage = submitNext.click();
+		System.out.println(finalPage.asText());
+		
+		//Verify it in the sale delivery
+		HtmlTable saleDeliTable = util.getCustomerSaleDeliveries(vat);
+		int lastIndexsaleDeli = saleDeliTable.getRows().size() - 1;
+		HtmlTableRow rowSaleDeli = saleDeliTable.getRow(lastIndexsaleDeli);
+		assertEquals(saleId, rowSaleDeli.getCell(1).asText());
+		assertEquals(addressId, rowSaleDeli.getCell(2).asText());
+		//Tear down
+		util.removeCustomer(vat);
+	}
+	
+	
 
 }
-
-
-
-
-
