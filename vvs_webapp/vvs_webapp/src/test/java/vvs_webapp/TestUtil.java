@@ -124,6 +124,23 @@ public class TestUtil {
 		// check if report page includes the proper values
 		submit.click();
 	}
+	
+	public void closeSale(String id) throws IOException {
+		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "UpdateSaleStatusPageControler");
+
+		// get the page first form:
+		HtmlForm closeSaleForm = nextPage.getForms().get(0);
+
+		// place data at form
+		HtmlInput idInput = closeSaleForm.getInputByName("id");
+		idInput.setValueAttribute(id);
+
+		// submit form
+		HtmlInput submit = closeSaleForm.getInputByValue("Close Sale");
+
+		// check if report page includes the proper values
+		submit.click();
+	}
 
 	public HtmlTable getCustomerSales(String vat) throws IOException {
 		HtmlPage page = webClient.getPage(APPLICATION_URL + "getSales.html");

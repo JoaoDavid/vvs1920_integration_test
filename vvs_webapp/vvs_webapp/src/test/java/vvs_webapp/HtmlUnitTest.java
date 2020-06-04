@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
@@ -23,6 +24,13 @@ public class HtmlUnitTest {
 	@Before
 	public void setUpClass() throws Exception {
 		webClient = new WebClient();
+		webClient.setJavaScriptTimeout(15000);
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
 		util = new TestUtil(webClient);
 	}
 
@@ -116,7 +124,6 @@ public class HtmlUnitTest {
 				confirmedInfoCount++;
 			}
 		}
-		System.out.println(countBefore + ":" + countAfter);
 		assertEquals(2, confirmedInfoCount);
 		assertTrue((countAfter - countBefore) == confirmedInfoCount);
 		// Tear down
@@ -141,7 +148,26 @@ public class HtmlUnitTest {
 		util.removeCustomer(vat);
 	}
 
-
+	@Test
+	public void narrativeD() throws IOException {		
+		//Set Up
+		final String vat = "244377090";
+		final String desig = "José";
+		final String phone = "910576931";
+		util.addCustomer(vat, desig, phone);
+		util.addSale(vat);
+		//Close the sale		
+		final HtmlTable table = util.getCustomerSales(vat);
+		int indexLatest = table.getRows().size() - 1;
+		HtmlTableRow row = table.getRows().get(indexLatest);		
+		util.closeSale(row.getCell(0).asText());
+		//Assert that the sale is closed
+		final HtmlTable tableAfter = util.getCustomerSales(vat);
+		HtmlTableRow rowAfter = tableAfter.getRows().get(indexLatest);		
+		assertEquals("C", rowAfter.getCell(3).asText());
+		// Tear down
+		util.removeCustomer(vat);
+	}
 
 }
 
