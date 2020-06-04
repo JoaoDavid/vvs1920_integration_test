@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
@@ -157,7 +159,23 @@ public class TestUtil {
 		HtmlTable table = (HtmlTable) reportPage.getElementById("sales");
 		return table;
 	}
+	
+	
+	public HtmlTable getCustomerSaleDeliveries(String vat) throws IOException {
+		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "showDelivery.html");
+		// get the page first form:
+		HtmlForm findCustomerForm = nextPage.getForms().get(0);
 
+		// place data at form
+		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+
+		// submit form
+		HtmlInput submit = findCustomerForm.getInputByValue("Get Customer");
+		HtmlPage reportPage = submit.click();
+		HtmlTable table = (HtmlTable) reportPage.getElementById("salesDelivery");
+		return table;
+	}
 
 
 }
