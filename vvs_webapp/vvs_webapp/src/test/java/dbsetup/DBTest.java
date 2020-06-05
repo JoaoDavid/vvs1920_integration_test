@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -97,6 +98,14 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		int newSize = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		assertEquals(0, newSize);
 	}
+	
+	@Test
+	public void ruleTestD() throws ApplicationException {
+		int vat = 503183504;
+		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+		CustomerService.INSTANCE.removeCustomer(vat);
+		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+	}	
 
 	//@Test
 	public void addCustomerSizeTest() throws ApplicationException {
