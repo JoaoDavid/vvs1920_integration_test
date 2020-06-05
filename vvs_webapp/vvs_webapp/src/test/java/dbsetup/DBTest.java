@@ -1,10 +1,23 @@
 package dbsetup;
 
-import java.sql.SQLException;
+import static dbsetup.DBSetupUtils.DB_PASSWORD;
+import static dbsetup.DBSetupUtils.DB_URL;
+import static dbsetup.DBSetupUtils.DB_USERNAME;
+import static dbsetup.DBSetupUtils.DELETE_ALL;
+import static dbsetup.DBSetupUtils.INSERT_CUSTOMER_ADDRESS_DATA;
+import static dbsetup.DBSetupUtils.NUM_INIT_CUSTOMERS;
+import static dbsetup.DBSetupUtils.startApplicationDatabaseForTesting;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import org.junit.*;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.DbSetupTracker;
@@ -17,8 +30,6 @@ import webapp.services.ApplicationException;
 import webapp.services.CustomerDTO;
 import webapp.services.CustomerService;
 import webapp.services.CustomersDTO;
-
-import static dbsetup.DBSetupUtils.*;
 
 public class DBTest {
 
@@ -47,18 +58,44 @@ public class DBTest {
 		// that do not not change the BD. Otherwise, just use dbSetup.launch();
         dbSetupTracker.launchIfNecessary(dbSetup);
 		
+	}		
+	
+	@Test
+	public void ruleTestA() throws ApplicationException {
+		int vat = 503183504;
+		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+		assertThrows(ApplicationException.class, () -> {
+			CustomerService.INSTANCE.addCustomer(vat, "FCUL2", 217500000);
+		});		
+	}	
+	
+	/*// read-only test: unnecessary to re-launch setup after test has been run
+	dbSetupTracker.skipNextLaunch();*/
+	/*
+int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
+		int actual = CustomerService.INSTANCE.getAllCustomers().customers.size();
+		assertEquals(expected, actual);
+	 */
+	
+	@Test
+	public void ruleTestB() throws ApplicationException {
+		int vat = 503183504;
+		int phone = 217500000;
+		int newPhone = 934850281;
+		CustomerService.INSTANCE.addCustomer(vat, "FCUL", phone);
+		CustomerService.INSTANCE.updateCustomerPhone(vat, newPhone);
+		CustomerDTO customer = CustomerService.INSTANCE.getCustomerByVat(vat);
+		assertEquals(newPhone, customer.phoneNumber);	
 	}
 	
 	@Test
-	public void rule1Test() throws ApplicationException {
-		/*// read-only test: unnecessary to re-launch setup after test has been run
-		dbSetupTracker.skipNextLaunch();*/
-		
-		CustomerService.INSTANCE.addCustomer(503183504, "FCUL", 217500000);
-		int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
-		CustomerService.INSTANCE.addCustomer(503183504, "FCUL2", 217500000);
-		int actual = CustomerService.INSTANCE.getAllCustomers().customers.size();
-		assertEquals(expected, actual);
+	public void ruleTestC() throws ApplicationException {
+		List<CustomerDTO> customers = CustomerService.INSTANCE.getAllCustomers().customers;
+		for (CustomerDTO curr : customers) {
+			CustomerService.INSTANCE.removeCustomer(curr.vat);
+		}
+		int newSize = CustomerService.INSTANCE.getAllCustomers().customers.size();
+		assertEquals(0, newSize);
 	}
 
 	//@Test
