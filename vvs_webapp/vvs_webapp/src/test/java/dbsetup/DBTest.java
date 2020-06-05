@@ -5,16 +5,15 @@ import static dbsetup.DBSetupUtils.DB_URL;
 import static dbsetup.DBSetupUtils.DB_USERNAME;
 import static dbsetup.DBSetupUtils.DELETE_ALL;
 import static dbsetup.DBSetupUtils.INSERT_CUSTOMER_ADDRESS_DATA;
-import static dbsetup.DBSetupUtils.INSERT_CUSTOMER_SALE_DATA;
-import static dbsetup.DBSetupUtils.NUM_INIT_CUSTOMERS;
 import static dbsetup.DBSetupUtils.startApplicationDatabaseForTesting;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -148,6 +147,31 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 			SaleService.INSTANCE.addSale(vat);
 		});	
 	}	
+	
+	/**
+	 * All the new sales created for a customer
+	 * must have a total of 0.0
+	 * status must be open
+	 * must be assoaciated to the right vat
+	 * 
+	 * @throws ApplicationException
+	 */
+	@Test
+	public void extraSaleBehaviour2() throws ApplicationException {
+		int vat = 503183504;
+		assertFalse(hasClient(vat));
+		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+		assertTrue(hasClient(vat));
+		SaleService.INSTANCE.addSale(vat);
+		List<SaleDTO> sales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		for (SaleDTO curr : sales) {
+			assertEquals(dateFormat.format(new Date()), curr.data.toString());
+			assertEquals(new Double(0.0), curr.total);
+			assertEquals("O", curr.statusId);
+			assertEquals(vat, curr.customerVat);
+		}		
+	}
 
 
 	
