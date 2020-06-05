@@ -6,6 +6,7 @@ import java.util.List;
 
 import webapp.persistence.PersistenceException;
 import webapp.persistence.SaleDeliveryRowDataGateway;
+import webapp.persistence.SaleFinder;
 import webapp.persistence.SaleRowDataGateway;
 import webapp.persistence.SaleStatus;
 
@@ -72,6 +73,14 @@ public enum SaleService {
 		}
 	}
 	
+	public SaleDTO getSaleById(int id) throws ApplicationException {
+		try {
+			SaleRowDataGateway sale = new SaleFinder().getSaleById(id);
+			return new SaleDTO(sale.getId(), sale.getData(), sale.getTotal(), sale.getStatusId(), sale.getCustomerVat());
+		} catch (PersistenceException e) {
+				throw new ApplicationException ("Sale with id number " + id + " not found.", e);
+		}
+	}	
 	
 	public SalesDeliveryDTO getSalesDeliveryByVat (int vat) throws ApplicationException {
 		try {

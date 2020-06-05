@@ -19,7 +19,7 @@ public class SaleRowDataGateway {
 	/**
 	 * Sale's date
 	 */
-	private java.sql.Date data;
+	private java.sql.Date date;
 
 	/**
 	 * Sale's total
@@ -52,7 +52,7 @@ public class SaleRowDataGateway {
 	//}
 	
 	public SaleRowDataGateway(int customerVat, Date date) {
-		this.data = new java.sql.Date(date.getTime());
+		this.date = new java.sql.Date(date.getTime());
 		this.total = 0.0;
 		this.statusId = OPEN;
 		this.customerVat = customerVat;
@@ -64,18 +64,15 @@ public class SaleRowDataGateway {
 	
 	public SaleRowDataGateway(ResultSet rs) throws RecordNotFoundException {
 		try {
-			fillAttributes(rs.getDate("date"), rs.getInt("customer_vat"));
+			this.date = (java.sql.Date) rs.getDate("date");
+			this.customerVat = rs.getInt("customer_vat");
 			this.id = rs.getInt("id");
+			this.total = rs.getDouble("total");
+			this.statusId = rs.getString("status");
 		} catch (SQLException e) {
 			throw new RecordNotFoundException ("Customer does not exist", e);
 		}
 	}
-
-	private void fillAttributes(Date date, int customerVat) {
-		this.data = (java.sql.Date) date;
-		this.customerVat = customerVat;
-	}
-
 	
 	// 2. getters and setters
 
@@ -84,7 +81,7 @@ public class SaleRowDataGateway {
 	}
 
 	public java.sql.Date getData() {
-		return data;
+		return date;
 	}
 
 	public Double getTotal() {
@@ -127,7 +124,7 @@ public class SaleRowDataGateway {
 	public void insert () throws PersistenceException {
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(INSERT_SALE_SQL)){
 			// set statement arguments
-			statement.setDate(1, data);
+			statement.setDate(1, date);
 			statement.setDouble(2, total);
 			statement.setString(3, statusId);
 			statement.setInt(4, customerVat);
