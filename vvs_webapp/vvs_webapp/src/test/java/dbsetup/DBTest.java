@@ -192,6 +192,25 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 			SaleService.INSTANCE.addSaleDelivery(1, 1);
 		});		
 	}
+	
+	/**
+	 * After associating an address to a sale
+	 * it should not be allowed to do this task
+	 * for the same sale
+	 * 
+	 * @throws ApplicationException
+	 */
+	@Test
+	public void extraSaleDeliveryBehaviour2() throws ApplicationException {
+		int vat = 197672337;
+		assertTrue(hasClient(vat));
+		SaleService.INSTANCE.addSale(vat);
+		SaleService.INSTANCE.addSaleDelivery(1, 1);
+		int oldSize = SaleService.INSTANCE.getSalesDeliveryByVat(vat).sales_delivery.size();
+		SaleService.INSTANCE.addSaleDelivery(1, 1);
+		int newSize = SaleService.INSTANCE.getSalesDeliveryByVat(vat).sales_delivery.size();
+		assertEquals(oldSize, newSize);
+	}
 
 
 	
