@@ -195,8 +195,8 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 	
 	/**
 	 * After associating an address to a sale
-	 * it should not be allowed to do this task
-	 * for the same sale
+	 * it should not be allowed to 
+	 * add the same address do the sale
 	 * 
 	 * @throws ApplicationException
 	 */
