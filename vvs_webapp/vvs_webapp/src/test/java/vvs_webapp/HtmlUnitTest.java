@@ -166,6 +166,7 @@ public class HtmlUnitTest {
 		// Add Customer
 		final String vat = "244377090";
 		util.addCustomer(vat, "José", "910576931");
+		// Add address
 		final String address1 = "Rua Augusta";
 		final String door1 = "9";
 		final String postalCode1 = "1100-048";
@@ -173,9 +174,9 @@ public class HtmlUnitTest {
 		util.addAddress(vat, address1, door1, postalCode1, locality1);
 		// Add Sale
 		util.addSale(vat);
-		final HtmlTable table = util.getCustomerSales(vat);
-		int indexLatest = table.getRows().size() - 1;
-		HtmlTableRow row = table.getRow(indexLatest);
+		final HtmlTable tableSales = util.getCustomerSales(vat);
+		int indexLatest = tableSales.getRows().size() - 1;
+		HtmlTableRow row = tableSales.getRow(indexLatest);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd"); 
 		assertEquals(formatter.format(LocalDate.now()), row.getCell(1).asText());
 		assertEquals("0.0", row.getCell(2).asText());
