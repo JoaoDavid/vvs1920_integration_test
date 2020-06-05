@@ -172,6 +172,26 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 			assertEquals(vat, curr.customerVat);
 		}		
 	}
+	
+	/**
+	 * After a close has been closed
+	 * it should not be allowed to add
+	 * a delivery for that sale
+	 * 
+	 * @throws ApplicationException
+	 */
+	@Test
+	public void extraSaleDeliveryBehaviour1() throws ApplicationException {
+		int vat = 197672337;
+		assertTrue(hasClient(vat));
+		SaleService.INSTANCE.addSale(vat);
+		assertEquals("O", SaleService.INSTANCE.getSaleById(1).statusId);
+		SaleService.INSTANCE.updateSale(1);
+		assertEquals("C", SaleService.INSTANCE.getSaleById(1).statusId);
+		assertThrows(ApplicationException.class, () -> {
+			SaleService.INSTANCE.addSaleDelivery(1, 1);
+		});		
+	}
 
 
 	
