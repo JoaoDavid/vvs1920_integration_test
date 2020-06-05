@@ -9,6 +9,7 @@ import static dbsetup.DBSetupUtils.INSERT_CUSTOMER_SALE_DATA;
 import static dbsetup.DBSetupUtils.NUM_INIT_CUSTOMERS;
 import static dbsetup.DBSetupUtils.startApplicationDatabaseForTesting;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
@@ -85,7 +86,9 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		int vat = 503183504;
 		int phone = 217500000;
 		int newPhone = 934850281;
+		assertFalse(hasClient(vat));
 		CustomerService.INSTANCE.addCustomer(vat, "FCUL", phone);
+		assertTrue(hasClient(vat));
 		CustomerService.INSTANCE.updateCustomerPhone(vat, newPhone);
 		CustomerDTO customer = CustomerService.INSTANCE.getCustomerByVat(vat);
 		assertEquals(newPhone, customer.phoneNumber);	
@@ -104,15 +107,21 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 	@Test
 	public void ruleTestD() throws ApplicationException {
 		int vat = 503183504;
+		assertFalse(hasClient(vat));
 		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+		assertTrue(hasClient(vat));
 		CustomerService.INSTANCE.removeCustomer(vat);
+		assertFalse(hasClient(vat));
 		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+		assertTrue(hasClient(vat));
 	}
 	
 	@Test
 	public void ruleTestE() throws ApplicationException {
 		int vat = 197672337;
+		assertTrue(hasClient(vat));
 		CustomerService.INSTANCE.removeCustomer(vat);
+		assertFalse(hasClient(vat));
 		List<SaleDTO> sales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales;
 		assertEquals(0, sales.size());
 	}
@@ -124,16 +133,23 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		SaleService.INSTANCE.addSale(vat);
 		int newNumSales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales.size();
 		assertEquals(newNumSales, oldNumSales+1);
+	}
+	
+	/**
+	 * It should not be possible to add a sale to an non existent customer
+	 * 
+	 * @throws ApplicationException
+	 */
+	@Test
+	public void extraSaleBehaviour1() throws ApplicationException {
+		int vat = 503183504;
+		assertFalse(hasClient(vat));
+		assertThrows(ApplicationException.class, () -> {
+			SaleService.INSTANCE.addSale(vat);
+		});	
 	}	
 
-	//@Test
-	public void addCustomerSizeTest() throws ApplicationException {
 
-		CustomerService.INSTANCE.addCustomer(503183504, "FCUL", 217500000);
-		int size = CustomerService.INSTANCE.getAllCustomers().customers.size();
-		
-		assertEquals(NUM_INIT_CUSTOMERS+1, size);
-	}
 	
 	private boolean hasClient(int vat) throws ApplicationException {	
 		CustomersDTO customersDTO = CustomerService.INSTANCE.getAllCustomers();
@@ -142,14 +158,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 			if (customer.vat == vat)
 				return true;			
 		return false;
-	}
-	
-	//@Test
-	public void addCustomerTest() throws ApplicationException {
+	}	
 
-		assumeFalse(hasClient(503183504));
-		CustomerService.INSTANCE.addCustomer(503183504, "FCUL", 217500000);
-		assertTrue(hasClient(503183504));
-	}
 		
 }
