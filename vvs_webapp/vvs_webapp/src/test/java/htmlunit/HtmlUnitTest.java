@@ -1,4 +1,4 @@
-package vvs_webapp;
+package htmlunit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -24,7 +24,7 @@ public class HtmlUnitTest {
 	private static final String APPLICATION_URL = "http://localhost:8080/VVS_webappdemo/";
 
 	private WebClient webClient;
-	private TestUtil util;
+	private TestUtils utils;
 
 	@Before
 	public void setUpClass() throws Exception {
@@ -36,7 +36,7 @@ public class HtmlUnitTest {
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         webClient.getOptions().setJavaScriptEnabled(true);
         webClient.getOptions().setThrowExceptionOnScriptError(false);
-		util = new TestUtil(webClient);
+		utils = new TestUtils(webClient);
 	}
 
 	@After
@@ -50,23 +50,23 @@ public class HtmlUnitTest {
 		final String vat = "244377090";
 		final String desig = "José";
 		final String phone = "910576931";
-		util.addCustomer(vat, desig, phone);
+		utils.addCustomer(vat, desig, phone);
 		//State of the table before adding the 2 new addresses
-		final HtmlTable tableBefore = util.getCustomerAddresses(vat);
+		final HtmlTable tableBefore = utils.getCustomerAddresses(vat);
 		final int numRowsBefore = tableBefore==null ? 1 : tableBefore.getRowCount();
 		//Adding the 2 addresses
 		final String address1 = "Rua Augusta";
 		final String door1 = "9";
 		final String postalCode1 = "1100-048";
 		final String locality1 = "Lisboa";
-		util.addAddress(vat, address1, door1, postalCode1, locality1);
+		utils.addAddress(vat, address1, door1, postalCode1, locality1);
 		final String address2 = "Rua de São João";
 		final String door2 = "1";
 		final String postalCode2 = "4150-385";
 		final String locality2 = "Porto";
-		util.addAddress(vat, address2, door2, postalCode2, locality2);
+		utils.addAddress(vat, address2, door2, postalCode2, locality2);
 		//State of the table after adding the 2 new addresses
-		final HtmlTable tableAfter = util.getCustomerAddresses(vat);
+		final HtmlTable tableAfter = utils.getCustomerAddresses(vat);
 		final int numRowsAfter = tableAfter.getRowCount();
 		//Verify row count increased by 2
 		assertEquals(2, numRowsAfter-numRowsBefore);
@@ -82,7 +82,7 @@ public class HtmlUnitTest {
 		assertEquals(postalCode2, sndAddedRow.getCell(2).asText());
 		assertEquals(locality2, sndAddedRow.getCell(3).asText());
 		// Tear down
-		util.removeCustomer(vat);
+		utils.removeCustomer(vat);
 	}
 
 	@Test
@@ -95,13 +95,13 @@ public class HtmlUnitTest {
 		String phone2 = "960872610";
 		int confirmedInfoCount = 0;
 		//-------------before---------
-		final HtmlTable tableBefore = util.getCustomers();
+		final HtmlTable tableBefore = utils.getCustomers();
 		final int countBefore = tableBefore==null ? 1 : tableBefore.getRowCount();
 		//------------add customers---------
-		util.addCustomer(vat1, desig1, phone1);
-		util.addCustomer(vat2, desig2, phone2);
+		utils.addCustomer(vat1, desig1, phone1);
+		utils.addCustomer(vat2, desig2, phone2);
 		//-------------after---------
-		final HtmlTable tableAfter = util.getCustomers();
+		final HtmlTable tableAfter = utils.getCustomers();
 		int countAfter = tableAfter.getRowCount();
 		for (final HtmlTableRow row : tableAfter.getRows()) {
 			if (row.getCell(2).asText().equals(vat1)) {
@@ -119,8 +119,8 @@ public class HtmlUnitTest {
 		assertEquals(2, confirmedInfoCount);
 		assertTrue((countAfter - countBefore) == confirmedInfoCount);
 		// Tear down
-		util.removeCustomer(vat1);
-		util.removeCustomer(vat2);
+		utils.removeCustomer(vat1);
+		utils.removeCustomer(vat2);
 	}
 
 	@Test
@@ -129,15 +129,15 @@ public class HtmlUnitTest {
 		final String vat = "244377090";
 		final String desig = "José";
 		final String phone = "910576931";
-		util.addCustomer(vat, desig, phone);
+		utils.addCustomer(vat, desig, phone);
 		//Add sale
-		util.addSale(vat);
-		final HtmlTable tableAfter = util.getCustomerSales(vat);
+		utils.addSale(vat);
+		final HtmlTable tableAfter = utils.getCustomerSales(vat);
 		int indexLatest = tableAfter.getRows().size() - 1;
 		HtmlTableRow row = tableAfter.getRow(indexLatest);
 		assertEquals("O", row.getCell(3).asText());
 		// Tear down
-		util.removeCustomer(vat);
+		utils.removeCustomer(vat);
 	}
 
 	@Test
@@ -146,34 +146,34 @@ public class HtmlUnitTest {
 		final String vat = "244377090";
 		final String desig = "José";
 		final String phone = "910576931";
-		util.addCustomer(vat, desig, phone);
-		util.addSale(vat);
+		utils.addCustomer(vat, desig, phone);
+		utils.addSale(vat);
 		//Close the sale		
-		final HtmlTable table = util.getCustomerSales(vat);
+		final HtmlTable table = utils.getCustomerSales(vat);
 		int indexLatest = table.getRows().size() - 1;
 		HtmlTableRow row = table.getRow(indexLatest);		
-		util.closeSale(row.getCell(0).asText());
+		utils.closeSale(row.getCell(0).asText());
 		//Assert that the sale is closed
-		final HtmlTable tableAfter = util.getCustomerSales(vat);
+		final HtmlTable tableAfter = utils.getCustomerSales(vat);
 		HtmlTableRow rowAfter = tableAfter.getRow(indexLatest);		
 		assertEquals("C", rowAfter.getCell(3).asText());
 		// Tear down
-		util.removeCustomer(vat);
+		utils.removeCustomer(vat);
 	}
 	
 	@Test
 	public void narrativeE() throws IOException {
 		// Add Customer
 		final String vat = "244377090";
-		util.addCustomer(vat, "José", "910576931");
+		utils.addCustomer(vat, "José", "910576931");
 		final String address1 = "Rua Augusta";
 		final String door1 = "9";
 		final String postalCode1 = "1100-048";
 		final String locality1 = "Lisboa";
-		util.addAddress(vat, address1, door1, postalCode1, locality1);
+		utils.addAddress(vat, address1, door1, postalCode1, locality1);
 		// Add Sale
-		util.addSale(vat);
-		final HtmlTable table = util.getCustomerSales(vat);
+		utils.addSale(vat);
+		final HtmlTable table = utils.getCustomerSales(vat);
 		int indexLatest = table.getRows().size() - 1;
 		HtmlTableRow row = table.getRow(indexLatest);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd"); 
@@ -210,13 +210,13 @@ public class HtmlUnitTest {
 		System.out.println(finalPage.asText());
 		
 		//Verify it in the sale delivery
-		HtmlTable saleDeliTable = util.getCustomerSaleDeliveries(vat);
+		HtmlTable saleDeliTable = utils.getCustomerSaleDeliveries(vat);
 		int lastIndexsaleDeli = saleDeliTable.getRows().size() - 1;
 		HtmlTableRow rowSaleDeli = saleDeliTable.getRow(lastIndexsaleDeli);
 		assertEquals(saleId, rowSaleDeli.getCell(1).asText());
 		assertEquals(addressId, rowSaleDeli.getCell(2).asText());
 		//Tear down
-		util.removeCustomer(vat);
+		utils.removeCustomer(vat);
 	}
 	
 	

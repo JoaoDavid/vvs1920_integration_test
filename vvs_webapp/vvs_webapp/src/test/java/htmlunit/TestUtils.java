@@ -1,25 +1,23 @@
-package vvs_webapp;
+package htmlunit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 
-public class TestUtil {
+public class TestUtils {
 
 	private static final String APPLICATION_URL = "http://localhost:8080/VVS_webappdemo/";
 
 	private WebClient webClient;	
 
-	public TestUtil(WebClient webClient) {
+	public TestUtils(WebClient webClient) {
 		this.webClient = webClient;
 	}
 
