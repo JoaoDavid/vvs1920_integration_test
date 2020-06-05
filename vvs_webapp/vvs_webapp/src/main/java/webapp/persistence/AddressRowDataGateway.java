@@ -11,26 +11,21 @@ public class AddressRowDataGateway{
 	private String address;
 	private int id;
 	private int customerVat;
-	
+
 	// 1. constructor 
 
-			/**
-			 * Creates a new address given its address and customer vat.
-			 * 
-			 * @param address The customer's address
-			 * @param customerVat The customer's vat
-			 */
-	
-	public AddressRowDataGateway() {
-		
-	}
-		
+	/**
+	 * Creates a new address given its address and customer vat.
+	 * 
+	 * @param address The customer's address
+	 * @param customerVat The customer's vat
+	 */
 	public AddressRowDataGateway (String address, int customerVat) {
 		this.address = address;
 		this.customerVat = customerVat;
-		
+
 	}
-	
+
 	public AddressRowDataGateway(ResultSet rs) throws RecordNotFoundException {
 		try {
 			fillAttributes(rs.getString("address"), 
@@ -40,12 +35,12 @@ public class AddressRowDataGateway{
 			throw new RecordNotFoundException ("Customer does not exist", e);
 		}
 	}
-	
+
 	private void fillAttributes(String address, int customerVat) {
 		this.address = address;
 		this.customerVat = customerVat;
 	}
-		
+
 	// 2. getters and setters
 	public int getId() {
 		return id;
@@ -54,25 +49,25 @@ public class AddressRowDataGateway{
 	public int getCustVat() {
 		return customerVat;
 	}
-	
+
 	public String getAddress() {
 		return address;
 	}
-	
+
 	public void setAddress(String address) {
 		this.address = address;
 	}	
-	
-	
+
+
 	/**
 	 * The insert adress SQL statement
 	 */
-	
+
 	private static final String INSERT_ADDRESS_SQL = 
 			"insert into address (id, address, customer_Vat) " +
-			"values (DEFAULT, ?, ?)";
-	
-	
+					"values (DEFAULT, ?, ?)";
+
+
 	public void insert() throws PersistenceException {
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(INSERT_ADDRESS_SQL)){
 			// set statement arguments
@@ -84,16 +79,16 @@ public class AddressRowDataGateway{
 			throw new PersistenceException("Internal error!", e);
 		}
 	}
-	
+
 	/**
 	 * The select address by customer id SQL statement
 	 */
-	
+
 	private static final String	GET_ADDRESS_BY_CUSTOMER_VAT_SQL =
 			"select * " +
-				"from address " +
-				"where customer_Vat = ?";
-	
+					"from address " +
+					"where customer_Vat = ?";
+
 	/**
 	 * Gets the products of a sale by its sale id 
 	 * 
@@ -104,7 +99,7 @@ public class AddressRowDataGateway{
 	 *         
 	 *         
 	 */
-	public List<AddressRowDataGateway> getCustomerAddresses (int customerVat) throws PersistenceException {
+	public static List<AddressRowDataGateway> getCustomerAddresses (int customerVat) throws PersistenceException {
 		List<AddressRowDataGateway> addrs = new ArrayList<>();
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(GET_ADDRESS_BY_CUSTOMER_VAT_SQL)){
 			statement.setInt(1, customerVat);
@@ -128,5 +123,5 @@ public class AddressRowDataGateway{
 			throw new RecordNotFoundException ("Address does not exist", e);
 		}
 	}
-	
+
 }

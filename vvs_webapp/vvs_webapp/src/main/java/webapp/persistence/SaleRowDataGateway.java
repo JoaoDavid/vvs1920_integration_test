@@ -57,11 +57,7 @@ public class SaleRowDataGateway {
 		this.statusId = OPEN;
 		this.customerVat = customerVat;
 	}
-	
-	public SaleRowDataGateway() {
-	}
-	
-	
+		
 	public SaleRowDataGateway(ResultSet rs) throws RecordNotFoundException {
 		try {
 			this.date = (java.sql.Date) rs.getDate("date");
@@ -150,7 +146,7 @@ public class SaleRowDataGateway {
 	private static final String GET_SALE_BY_CUSTOMERS_VAT_SQL = 
 			   "select * from sale where customer_vat = ?";
 	
-	public List<SaleRowDataGateway> getAllSales(int vat) throws PersistenceException {
+	public static List<SaleRowDataGateway> getAllSales(int vat) throws PersistenceException {
 		List<SaleRowDataGateway> sales = new ArrayList<SaleRowDataGateway>();
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(GET_SALE_BY_CUSTOMERS_VAT_SQL)){
 			statement.setInt(1, vat);
@@ -169,7 +165,7 @@ public class SaleRowDataGateway {
 	private static final String GET_ALL_SALES_SQL = 
 			   "select * from sale";
 	
-	public List<SaleRowDataGateway> getAllSales() throws PersistenceException {
+	public static List<SaleRowDataGateway> getAllSales() throws PersistenceException {
 		List<SaleRowDataGateway> sales = new ArrayList<SaleRowDataGateway>();
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(GET_ALL_SALES_SQL)){
 			try (ResultSet rs = statement.executeQuery()) {
@@ -211,7 +207,7 @@ public class SaleRowDataGateway {
 			"select * from sale " +
 					   "where id = ?";
 	
-	public SaleRowDataGateway getSaleById (int id) throws PersistenceException {
+	public static SaleRowDataGateway getSaleById (int id) throws PersistenceException {
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(GET_SALE_BY_ID_SQL)){
 			// set statement arguments
 			statement.setInt(1, id);

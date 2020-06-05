@@ -52,8 +52,6 @@ public class SaleDeliveryRowDataGateway {
 		this.customer_vat = customer_vat;
 		
 	}
-	public SaleDeliveryRowDataGateway () {
-	}
 	
 	public SaleDeliveryRowDataGateway(ResultSet rs) throws RecordNotFoundException {
 		try {
@@ -119,7 +117,7 @@ public class SaleDeliveryRowDataGateway {
 				"from saledelivery " +
 				"where customer_vat = ?";
 	
-	public List<SaleDeliveryRowDataGateway> getAllSaleDelivery(int vat) throws PersistenceException {
+	public static List<SaleDeliveryRowDataGateway> getAllSaleDelivery(int vat) throws PersistenceException {
 		List<SaleDeliveryRowDataGateway> list = new ArrayList<>();
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(GET_SALEDELIVERY_BY_CUSTOMER_VAT_SQL)) {
 			//set statement arguments

@@ -6,7 +6,6 @@ import java.util.List;
 
 import webapp.persistence.PersistenceException;
 import webapp.persistence.SaleDeliveryRowDataGateway;
-import webapp.persistence.SaleFinder;
 import webapp.persistence.SaleRowDataGateway;
 import webapp.persistence.SaleStatus;
 
@@ -26,7 +25,7 @@ public enum SaleService {
 		if (!isValidVAT (vat))
 			throw new ApplicationException ("Invalid VAT number: " + vat);
 		else try {
-			List<SaleRowDataGateway> sales = new SaleRowDataGateway().getAllSales(vat);
+			List<SaleRowDataGateway> sales = SaleRowDataGateway.getAllSales(vat);
 			List<SaleDTO> list = new ArrayList<>();
 			for(SaleRowDataGateway sl : sales) {
 				list.add(new SaleDTO(sl.getId(), sl.getData(),sl.getTotal(), sl.getStatusId(), sl.getCustomerVat()));
@@ -40,7 +39,7 @@ public enum SaleService {
 	
 	public SalesDTO getAllSales() throws ApplicationException {
 		try {
-			List<SaleRowDataGateway> sales = new SaleRowDataGateway().getAllSales();
+			List<SaleRowDataGateway> sales = SaleRowDataGateway.getAllSales();
 			List<SaleDTO> list = new ArrayList<>();
 			for(SaleRowDataGateway sl : sales) {
 				list.add(new SaleDTO(sl.getId(), sl.getData(),sl.getTotal(), sl.getStatusId(), sl.getCustomerVat()));
@@ -65,7 +64,7 @@ public enum SaleService {
 	
 	public void updateSale(int id) throws ApplicationException {
 		try {
-			SaleRowDataGateway sale = new SaleRowDataGateway().getSaleById(id);
+			SaleRowDataGateway sale = SaleRowDataGateway.getSaleById(id);
 			sale.setSaleStatus(SaleStatus.CLOSED);
 			sale.updateSale();
 		} catch (PersistenceException e) {
@@ -75,7 +74,7 @@ public enum SaleService {
 	
 	public SaleDTO getSaleById(int id) throws ApplicationException {
 		try {
-			SaleRowDataGateway sale = new SaleFinder().getSaleById(id);
+			SaleRowDataGateway sale = SaleRowDataGateway.getSaleById(id);
 			return new SaleDTO(sale.getId(), sale.getData(), sale.getTotal(), sale.getStatusId(), sale.getCustomerVat());
 		} catch (PersistenceException e) {
 				throw new ApplicationException ("Sale with id number " + id + " not found.", e);
@@ -84,7 +83,7 @@ public enum SaleService {
 	
 	public SalesDeliveryDTO getSalesDeliveryByVat (int vat) throws ApplicationException {
 		try {
-			List<SaleDeliveryRowDataGateway> salesd = new SaleDeliveryRowDataGateway().getAllSaleDelivery(vat);
+			List<SaleDeliveryRowDataGateway> salesd = SaleDeliveryRowDataGateway.getAllSaleDelivery(vat);
 			List<SaleDeliveryDTO> list = new ArrayList<>();
 			for(SaleDeliveryRowDataGateway sd : salesd) {
 				list.add(new SaleDeliveryDTO(sd.getId(), sd.getSale_id(), sd.getCustomerVat(), sd.getAddr_id()));
@@ -98,7 +97,7 @@ public enum SaleService {
 	
 	public int addSaleDelivery(int sale_id, int addr_id) throws ApplicationException {
 		try {
-			SaleRowDataGateway s = new SaleRowDataGateway().getSaleById(sale_id);
+			SaleRowDataGateway s = SaleRowDataGateway.getSaleById(sale_id);
 			SaleDeliveryRowDataGateway sale = new SaleDeliveryRowDataGateway(sale_id, s.getCustomerVat() ,addr_id);
 			sale.insert();
 			return sale.getCustomerVat();

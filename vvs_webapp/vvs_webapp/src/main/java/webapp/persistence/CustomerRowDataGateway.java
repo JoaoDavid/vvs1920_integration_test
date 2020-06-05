@@ -49,10 +49,6 @@ public class CustomerRowDataGateway {
 		this.phoneNumber = phoneNumber;
 	}
 	
-	public CustomerRowDataGateway() {
-	}
-	
-	
 	public CustomerRowDataGateway(int vat, String designation, int phoneNumber) {
 		this.vat = vat;
 		this.designation = designation;
@@ -193,7 +189,7 @@ public class CustomerRowDataGateway {
 	 * from the database.
 	 */
 	
-	public List<CustomerRowDataGateway> getAllCustomers () throws PersistenceException {
+	public static List<CustomerRowDataGateway> getAllCustomers () throws PersistenceException {
 		List<CustomerRowDataGateway> customers = new ArrayList<CustomerRowDataGateway>();
 		try (PreparedStatement statement = DataSource.INSTANCE.prepare(GET_ALL_CUSTOMERS_SQL)){
 			try (ResultSet rs = statement.executeQuery()) {

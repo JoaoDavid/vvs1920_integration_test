@@ -46,7 +46,7 @@ public enum CustomerService {
 	
 	public CustomersDTO getAllCustomers() throws ApplicationException {
 		try {
-			List<CustomerRowDataGateway> customers = new CustomerRowDataGateway().getAllCustomers();
+			List<CustomerRowDataGateway> customers = CustomerRowDataGateway.getAllCustomers();
 			List<CustomerDTO> list = new ArrayList<CustomerDTO>();
 			for(CustomerRowDataGateway cust : customers) {
 				list.add(new CustomerDTO(cust.getCustomerId(), cust.getVAT(), 
@@ -73,7 +73,7 @@ public enum CustomerService {
 	
 	public AddressesDTO getAllAddresses(int customerVat) throws ApplicationException {
 		try {
-			List<AddressRowDataGateway> addrs = new AddressRowDataGateway().getCustomerAddresses(customerVat);
+			List<AddressRowDataGateway> addrs = AddressRowDataGateway.getCustomerAddresses(customerVat);
 			List<AddressDTO> list = new ArrayList<>();
 			for(AddressRowDataGateway addr : addrs) {
 				list.add(new AddressDTO(addr.getId(), addr.getCustVat(), addr.getAddress()));
