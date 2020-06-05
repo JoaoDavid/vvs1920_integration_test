@@ -5,13 +5,13 @@ import static dbsetup.DBSetupUtils.DB_URL;
 import static dbsetup.DBSetupUtils.DB_USERNAME;
 import static dbsetup.DBSetupUtils.DELETE_ALL;
 import static dbsetup.DBSetupUtils.INSERT_CUSTOMER_ADDRESS_DATA;
+import static dbsetup.DBSetupUtils.INSERT_CUSTOMER_SALE_DATA;
 import static dbsetup.DBSetupUtils.NUM_INIT_CUSTOMERS;
 import static dbsetup.DBSetupUtils.startApplicationDatabaseForTesting;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -31,6 +31,8 @@ import webapp.services.ApplicationException;
 import webapp.services.CustomerDTO;
 import webapp.services.CustomerService;
 import webapp.services.CustomersDTO;
+import webapp.services.SaleDTO;
+import webapp.services.SaleService;
 
 public class DBTest {
 
@@ -105,6 +107,23 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
 		CustomerService.INSTANCE.removeCustomer(vat);
 		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+	}
+	
+	@Test
+	public void ruleTestE() throws ApplicationException {
+		int vat = 197672337;
+		CustomerService.INSTANCE.removeCustomer(vat);
+		List<SaleDTO> sales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales;
+		assertEquals(0, sales.size());
+	}
+	
+	@Test
+	public void ruleTestF() throws ApplicationException {
+		int vat = 197672337;
+		int oldNumSales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales.size();
+		SaleService.INSTANCE.addSale(vat);
+		int newNumSales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales.size();
+		assertEquals(newNumSales, oldNumSales+1);
 	}	
 
 	//@Test

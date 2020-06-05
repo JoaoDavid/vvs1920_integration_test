@@ -82,7 +82,7 @@ public class DBSetupUtils {
 		
 		NUM_INIT_ADDRESSES = insertAddresses.getRowCount();		
 		
-		INSERT_CUSTOMER_ADDRESS_DATA = sequenceOf(insertCustomers, insertAddresses);
+		INSERT_CUSTOMER_ADDRESS_DATA = sequenceOf(insertCustomers, insertAddresses, insertSales);
 	}
 	
 }
