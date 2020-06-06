@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import webapp.persistence.AddressRowDataGateway;
-import webapp.persistence.CustomerFinder;
 import webapp.persistence.CustomerRowDataGateway;
 import webapp.persistence.PersistenceException;
 
@@ -24,7 +23,7 @@ public enum CustomerService {
 		if (!isValidVAT (vat))
 			throw new ApplicationException ("Invalid VAT number: " + vat);
 		else try {
-			CustomerRowDataGateway customer = new CustomerFinder().getCustomerByVATNumber(vat);
+			CustomerRowDataGateway customer = CustomerRowDataGateway.getCustomerByVATNumber(vat);
 			return new CustomerDTO(customer.getCustomerId(), customer.getVAT(), 
 					customer.getDesignation(), customer.getPhoneNumber());
 		} catch (PersistenceException e) {
@@ -91,7 +90,7 @@ public enum CustomerService {
 		if (!isValidVAT (vat))
 			throw new ApplicationException ("Invalid VAT number: " + vat);
 		else try {
-			CustomerRowDataGateway customer = new CustomerFinder().getCustomerByVATNumber(vat);
+			CustomerRowDataGateway customer = CustomerRowDataGateway.getCustomerByVATNumber(vat);
 			customer.setPhoneNumber(phoneNumber);
 			customer.updatePhoneNumber();
 		} catch (PersistenceException e) {
@@ -103,7 +102,7 @@ public enum CustomerService {
 		if (!isValidVAT (vat))
 			throw new ApplicationException ("Invalid VAT number: " + vat);
 		else try {
-			CustomerRowDataGateway customer = new CustomerFinder().getCustomerByVATNumber(vat);
+			CustomerRowDataGateway customer = CustomerRowDataGateway.getCustomerByVATNumber(vat);
 			customer.removeCustomer();
 		} catch (PersistenceException e) {
 				throw new ApplicationException ("Customer with vat number " + vat + " doesn't exist.", e);
