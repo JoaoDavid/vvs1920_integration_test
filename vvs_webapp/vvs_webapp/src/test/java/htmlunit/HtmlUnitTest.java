@@ -48,7 +48,7 @@ public class HtmlUnitTest {
 	public void narrativeA() throws IOException {
 		//Set Up
 		final String vat = "244377090";
-		final String desig = "José";
+		final String desig = "narrativeA";
 		final String phone = "910576931";
 		utils.addCustomer(vat, desig, phone);
 		//State of the table before adding the 2 new addresses
@@ -88,10 +88,10 @@ public class HtmlUnitTest {
 	@Test
 	public void narrativeB() throws IOException {
 		String vat1 = "244377090";
-		String desig1 = "José";
+		String desig1 = "narrativeB-1";
 		String phone1 = "910576931";
 		String vat2 = "217485367";
-		String desig2 = "Mário";
+		String desig2 = "narrativeB-2";
 		String phone2 = "960872610";
 		int confirmedInfoCount = 0;
 		//-------------before---------
@@ -127,7 +127,7 @@ public class HtmlUnitTest {
 	public void narrativeC() throws IOException {		
 		//Set Up
 		final String vat = "244377090";
-		final String desig = "José";
+		final String desig = "narrativeC";
 		final String phone = "910576931";
 		utils.addCustomer(vat, desig, phone);
 		//Add sale
@@ -144,7 +144,7 @@ public class HtmlUnitTest {
 	public void narrativeD() throws IOException {		
 		//Set Up
 		final String vat = "244377090";
-		final String desig = "José";
+		final String desig = "narrativeD";
 		final String phone = "910576931";
 		utils.addCustomer(vat, desig, phone);
 		utils.addSale(vat);
