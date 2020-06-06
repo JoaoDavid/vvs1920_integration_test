@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import webapp.persistence.CustomerRowDataGateway;
 import webapp.persistence.PersistenceException;
 import webapp.persistence.SaleDeliveryRowDataGateway;
 import webapp.persistence.SaleRowDataGateway;
@@ -54,6 +55,7 @@ public enum SaleService {
 	
 	public void addSale(int customerVat) throws ApplicationException {
 		try {
+			CustomerRowDataGateway.getCustomerByVATNumber(customerVat);
 			SaleRowDataGateway sale = new SaleRowDataGateway(customerVat, new Date());
 			sale.insert();
 			
