@@ -221,5 +221,23 @@ public class SaleRowDataGateway {
 		}
 	}
 	
+	/**
+	 * The remove sales from customer SQL statement
+	 */
+	private static final String	REMOVE_SALES_BY_VAT =
+			"delete from sale " +
+					   "where customer_vat = ?";
+	
+	public static void removeSalesFromCustomer (int customerVat) throws PersistenceException {
+		try (PreparedStatement statement = DataSource.INSTANCE.prepare(REMOVE_SALES_BY_VAT)){
+			// set statement arguments
+			statement.setInt(1, customerVat);
+			// execute SQL
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new PersistenceException("Internal error removing sales from customer " + customerVat + ".", e);
+		}
+	}
+	
 		
 }

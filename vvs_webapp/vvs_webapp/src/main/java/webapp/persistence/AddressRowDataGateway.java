@@ -125,7 +125,7 @@ public class AddressRowDataGateway{
 	}
 	
 	/**
-	 * The update customerPhone SQL statement
+	 * The remove addresses from customer SQL statement
 	 */
 	private static final String	REMOVE_ADDRESSES_BY_VAT =
 			"delete from address " +

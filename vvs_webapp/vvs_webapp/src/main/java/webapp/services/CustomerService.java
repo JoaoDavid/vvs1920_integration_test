@@ -6,6 +6,7 @@ import java.util.List;
 import webapp.persistence.AddressRowDataGateway;
 import webapp.persistence.CustomerRowDataGateway;
 import webapp.persistence.PersistenceException;
+import webapp.persistence.SaleRowDataGateway;
 
 
 /**
@@ -104,6 +105,7 @@ public enum CustomerService {
 		else try {
 			CustomerRowDataGateway customer = CustomerRowDataGateway.getCustomerByVATNumber(vat);
 			AddressRowDataGateway.removeAddressesFromCustomer(vat);
+			SaleRowDataGateway.removeSalesFromCustomer(vat);
 			customer.removeCustomer();
 		} catch (PersistenceException e) {
 				throw new ApplicationException ("Customer with vat number " + vat + " doesn't exist.", e);
