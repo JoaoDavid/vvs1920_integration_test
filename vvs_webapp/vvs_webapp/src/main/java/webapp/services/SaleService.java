@@ -97,11 +97,13 @@ public enum SaleService {
 	
 	public int addSaleDelivery(int sale_id, int addr_id) throws ApplicationException {
 		try {
-			SaleRowDataGateway s = SaleRowDataGateway.getSaleById(sale_id);
-			SaleDeliveryRowDataGateway sale = new SaleDeliveryRowDataGateway(sale_id, s.getCustomerVat() ,addr_id);
-			sale.insert();
-			return sale.getCustomerVat();
-			
+			SaleRowDataGateway sale = SaleRowDataGateway.getSaleById(sale_id);
+			if (sale.getStatus().equals(SaleStatus.CLOSED)) {
+				throw new ApplicationException ("Can't add a delivery to a closed sale.");
+			}
+			SaleDeliveryRowDataGateway saleDeli = new SaleDeliveryRowDataGateway(sale_id, sale.getCustomerVat() ,addr_id);
+			saleDeli.insert();
+			return saleDeli.getCustomerVat();			
 		} catch (PersistenceException e) {
 				throw new ApplicationException ("Can't add address to cutomer.", e);
 		}
