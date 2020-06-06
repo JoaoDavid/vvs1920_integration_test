@@ -66,20 +66,12 @@ public class DBTest {
 
 	@Test
 	public void ruleTestA() throws ApplicationException {
-		int vat = 503183504;
-		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+		int vat = 197672337;
+		assertTrue(hasClient(vat));
 		assertThrows(ApplicationException.class, () -> {
 			CustomerService.INSTANCE.addCustomer(vat, "FCUL2", 217500000);
 		});		
-	}	
-
-	/*// read-only test: unnecessary to re-launch setup after test has been run
-	dbSetupTracker.skipNextLaunch();*/
-	/*
-int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
-		int actual = CustomerService.INSTANCE.getAllCustomers().customers.size();
-		assertEquals(expected, actual);
-	 */
+	}
 
 	@Test
 	public void ruleTestB() throws ApplicationException {
@@ -97,6 +89,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 	@Test
 	public void ruleTestC() throws ApplicationException {
 		List<CustomerDTO> customers = CustomerService.INSTANCE.getAllCustomers().customers;
+		assertNotEquals(0, customers.size());
 		for (CustomerDTO curr : customers) {
 			CustomerService.INSTANCE.removeCustomer(curr.vat);
 		}
@@ -216,10 +209,11 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 
 	private boolean hasClient(int vat) throws ApplicationException {	
 		CustomersDTO customersDTO = CustomerService.INSTANCE.getAllCustomers();
-
-		for(CustomerDTO customer : customersDTO.customers)
-			if (customer.vat == vat)
-				return true;			
+		for(CustomerDTO customer : customersDTO.customers) {
+			if (customer.vat == vat) {
+				return true;
+			}
+		}					
 		return false;
 	}	
 
