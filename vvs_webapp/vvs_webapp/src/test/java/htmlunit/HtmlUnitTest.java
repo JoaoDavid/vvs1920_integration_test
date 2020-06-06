@@ -204,10 +204,9 @@ public class HtmlUnitTest {
 		addressInput.setValueAttribute(addressId);
 		HtmlInput saleInput = addSaleDeliveryForm.getInputByName("sale_id");
 		saleInput.setValueAttribute(saleId);
-		System.out.println(reportPage.asText());
+
 		HtmlInput submitNext = addSaleDeliveryForm.getInputByValue("Insert");
-		HtmlPage finalPage = submitNext.click();
-		System.out.println(finalPage.asText());
+		submitNext.click();
 		
 		//Verify it in the sale delivery
 		HtmlTable saleDeliTable = utils.getCustomerSaleDeliveries(vat);
