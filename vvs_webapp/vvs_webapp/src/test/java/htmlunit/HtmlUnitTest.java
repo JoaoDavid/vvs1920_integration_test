@@ -164,8 +164,8 @@ public class HtmlUnitTest {
 	@Test
 	public void narrativeE() throws IOException {
 		// Add Customer
-		final String vat = "244377090";
-		utils.addCustomer(vat, "José", "910576931");
+		final String vat = "229122205";
+		utils.addCustomer(vat, "narrativeE", "910576931");
 		final String address1 = "Rua Augusta";
 		final String door1 = "9";
 		final String postalCode1 = "1100-048";
@@ -196,7 +196,7 @@ public class HtmlUnitTest {
 		HtmlTable tableAddresses = (HtmlTable) reportPage.getElementById("addresses");
 		String addressId = tableAddresses.getRow(1).getCell(0).asText();
 		
-		HtmlTable tableSales = (HtmlTable) reportPage.getElementById("addresses");
+		HtmlTable tableSales = (HtmlTable) reportPage.getElementById("sales");
 		String saleId = tableSales.getRow(1).getCell(0).asText();
 		
 		HtmlForm addSaleDeliveryForm = reportPage.getForms().get(0);
@@ -204,7 +204,7 @@ public class HtmlUnitTest {
 		addressInput.setValueAttribute(addressId);
 		HtmlInput saleInput = addSaleDeliveryForm.getInputByName("sale_id");
 		saleInput.setValueAttribute(saleId);
-		
+		System.out.println(reportPage.asText());
 		HtmlInput submitNext = addSaleDeliveryForm.getInputByValue("Insert");
 		HtmlPage finalPage = submitNext.click();
 		System.out.println(finalPage.asText());
