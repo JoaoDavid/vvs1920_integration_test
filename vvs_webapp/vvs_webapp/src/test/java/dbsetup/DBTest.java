@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -37,32 +38,32 @@ import webapp.services.SaleService;
 public class DBTest {
 
 	private static Destination dataSource;
-	
-    // the tracker is static because JUnit uses a separate Test instance for every test method.
-    private static DbSetupTracker dbSetupTracker = new DbSetupTracker();
-	
-    @BeforeClass
-    public static void setupClass() {
-    	startApplicationDatabaseForTesting();
+
+	// the tracker is static because JUnit uses a separate Test instance for every test method.
+	private static DbSetupTracker dbSetupTracker = new DbSetupTracker();
+
+	@BeforeClass
+	public static void setupClass() {
+		startApplicationDatabaseForTesting();
 		dataSource = DriverManagerDestination.with(DB_URL, DB_USERNAME, DB_PASSWORD);
-    }
-    
+	}
+
 	@Before
 	public void setup() throws SQLException {
 
 		Operation initDBOperations = Operations.sequenceOf(
-			  DELETE_ALL
-			, INSERT_CUSTOMER_ADDRESS_DATA
-			);
-		
+				DELETE_ALL
+				, INSERT_CUSTOMER_ADDRESS_DATA
+				);
+
 		DbSetup dbSetup = new DbSetup(dataSource, initDBOperations);
-		
-        // Use the tracker to launch the DbSetup. This will speed-up tests 
+
+		// Use the tracker to launch the DbSetup. This will speed-up tests 
 		// that do not not change the BD. Otherwise, just use dbSetup.launch();
-        dbSetupTracker.launchIfNecessary(dbSetup);
-		
+		dbSetupTracker.launchIfNecessary(dbSetup);
+
 	}		
-	
+
 	@Test
 	public void ruleTestA() throws ApplicationException {
 		int vat = 503183504;
@@ -71,7 +72,7 @@ public class DBTest {
 			CustomerService.INSTANCE.addCustomer(vat, "FCUL2", 217500000);
 		});		
 	}	
-	
+
 	/*// read-only test: unnecessary to re-launch setup after test has been run
 	dbSetupTracker.skipNextLaunch();*/
 	/*
@@ -79,7 +80,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		int actual = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		assertEquals(expected, actual);
 	 */
-	
+
 	@Test
 	public void ruleTestB() throws ApplicationException {
 		int vat = 503183504;
@@ -92,7 +93,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		CustomerDTO customer = CustomerService.INSTANCE.getCustomerByVat(vat);
 		assertEquals(newPhone, customer.phoneNumber);	
 	}
-	
+
 	@Test
 	public void ruleTestC() throws ApplicationException {
 		List<CustomerDTO> customers = CustomerService.INSTANCE.getAllCustomers().customers;
@@ -102,7 +103,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		int newSize = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		assertEquals(0, newSize);
 	}
-	
+
 	@Test
 	public void ruleTestD() throws ApplicationException {
 		int vat = 503183504;
@@ -114,7 +115,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
 		assertTrue(hasClient(vat));
 	}
-	
+
 	@Test
 	public void ruleTestE() throws ApplicationException {
 		int vat = 197672337;
@@ -124,7 +125,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		List<SaleDTO> sales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales;
 		assertEquals(0, sales.size());
 	}
-	
+
 	@Test
 	public void ruleTestF() throws ApplicationException {
 		int vat = 197672337;
@@ -133,7 +134,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 		int newNumSales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales.size();
 		assertEquals(newNumSales, oldNumSales+1);
 	}
-	
+
 	/**
 	 * It should not be possible to add a sale to an non existent customer
 	 * 
@@ -147,7 +148,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 			SaleService.INSTANCE.addSale(vat);
 		});	
 	}	
-	
+
 	/**
 	 * All the new sales created for a customer
 	 * must have a total of 0.0
@@ -172,7 +173,7 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 			assertEquals(vat, curr.customerVat);
 		}		
 	}
-	
+
 	/**
 	 * After a close has been closed
 	 * it should not be allowed to add
@@ -192,11 +193,11 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 			SaleService.INSTANCE.addSaleDelivery(1, 1);
 		});		
 	}
-	
+
 	/**
-	 * After associating an address to a sale
-	 * it should not be allowed to 
-	 * add the same address do the sale
+	 * After removing a customer
+	 * its sale deliveries should
+	 * be removed as well
 	 * 
 	 * @throws ApplicationException
 	 */
@@ -204,24 +205,23 @@ int expected = CustomerService.INSTANCE.getAllCustomers().customers.size();
 	public void extraSaleDeliveryBehaviour2() throws ApplicationException {
 		int vat = 197672337;
 		assertTrue(hasClient(vat));
-		SaleService.INSTANCE.addSale(vat);
 		SaleService.INSTANCE.addSaleDelivery(1, 1);
-		int oldSize = SaleService.INSTANCE.getSalesDeliveryByVat(vat).sales_delivery.size();
-		SaleService.INSTANCE.addSaleDelivery(1, 1);
-		int newSize = SaleService.INSTANCE.getSalesDeliveryByVat(vat).sales_delivery.size();
-		assertEquals(oldSize, newSize);
+		assertNotEquals(0, SaleService.INSTANCE.getSalesDeliveryByVat(vat).sales_delivery.size());
+		CustomerService.INSTANCE.removeCustomer(vat);
+		assertFalse(hasClient(vat));
+		assertEquals(0, SaleService.INSTANCE.getSalesDeliveryByVat(vat).sales_delivery.size());
 	}
 
 
-	
+
 	private boolean hasClient(int vat) throws ApplicationException {	
 		CustomersDTO customersDTO = CustomerService.INSTANCE.getAllCustomers();
-		
+
 		for(CustomerDTO customer : customersDTO.customers)
 			if (customer.vat == vat)
 				return true;			
 		return false;
 	}	
 
-		
+
 }

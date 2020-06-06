@@ -6,6 +6,7 @@ import java.util.List;
 import webapp.persistence.AddressRowDataGateway;
 import webapp.persistence.CustomerRowDataGateway;
 import webapp.persistence.PersistenceException;
+import webapp.persistence.SaleDeliveryRowDataGateway;
 import webapp.persistence.SaleRowDataGateway;
 
 
@@ -104,6 +105,7 @@ public enum CustomerService {
 			throw new ApplicationException ("Invalid VAT number: " + vat);
 		else try {
 			CustomerRowDataGateway customer = CustomerRowDataGateway.getCustomerByVATNumber(vat);
+			SaleDeliveryRowDataGateway.removeSaleDeliveryFromCustomer(vat);
 			AddressRowDataGateway.removeAddressesFromCustomer(vat);
 			SaleRowDataGateway.removeSalesFromCustomer(vat);
 			customer.removeCustomer();
