@@ -89,7 +89,35 @@ public void extraSaleBehaviour2() throws ApplicationException {
 }
 \end{lstlisting}
 \subsection{Sale Deliveries Behavior}
+After a sale has been closed, it should not be possible to add a delivery for that sale 
+\begin{lstlisting}
+public void extraSaleDeliveryBehaviour1() throws ApplicationException {
+	int vat = 197672337;
+	assertTrue(hasClient(vat));
+	SaleService.INSTANCE.addSale(vat);
+	assertEquals("O", SaleService.INSTANCE.getSaleById(1).statusId);
+	SaleService.INSTANCE.updateSale(1);
+	assertEquals("C", SaleService.INSTANCE.getSaleById(1).statusId);
+	assertThrows(ApplicationException.class, () -> {
+		SaleService.INSTANCE.addSaleDelivery(1, 1);
+	});		
+}
+\end{lstlisting}
 
+After removing a customer, its sale deliveries should be removed as well
+\begin{lstlisting}
+public void extraSaleDeliveryBehaviour2() throws ApplicationException {
+	int vat = 197672337;
+	assertTrue(hasClient(vat));
+	SaleService.INSTANCE.addSaleDelivery(1, 1);
+	assertNotEquals(0, SaleService.INSTANCE
+			.getSalesDeliveryByVat(vat).sales_delivery.size());
+	CustomerService.INSTANCE.removeCustomer(vat);
+	assertFalse(hasClient(vat));
+	assertEquals(0, SaleService.INSTANCE
+		.getSalesDeliveryByVat(vat).sales_delivery.size());
+}
+\end{lstlisting}
 \section{Bugs found}
 
 
