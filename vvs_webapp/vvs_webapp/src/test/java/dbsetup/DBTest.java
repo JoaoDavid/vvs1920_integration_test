@@ -143,10 +143,13 @@ public class DBTest {
 	}	
 
 	/**
-	 * All the new sales created for a customer
+	 * All new sales created for a new customer 
+	 * must respect the following aspects
+	 * 
+	 * the date is the same as of creation
 	 * must have a total of 0.0
 	 * status must be open
-	 * must be assoaciated to the right vat
+	 * must be associated to the right vat
 	 * 
 	 * @throws ApplicationException
 	 */
