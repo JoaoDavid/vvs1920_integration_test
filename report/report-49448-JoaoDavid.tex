@@ -42,10 +42,58 @@
 \begin{document}
 \maketitle
 
-\section{Section}
-The name property was addded to some HTML elements, in order to be able to get them using HTML Unit:
-In the $CustomerInfo.jsp$ file, the name "addresses" was for the table element.
-In the $SalesInfo.jsp$ file, the name "sales" was for the table element.
+\section{HTML Unit}
+While defining the HTML Unit tests, some adaptations where made to the JSP files. The $name$ property was added to some HTML elements, in order to be able to get them using HTML Unit's API, those adaptations were made to the following files:
+
+\begin{itemize}
+   \item  CustomerInfo.jsp
+   
+   \item  SalesInfo.jsp
+   
+   \item  ShowSalesDelivery.jsp
+   
+   \item  addSaleDelivery.jsp  
+\end{itemize}
+
+\newpage
+
+\section{DB Setup}
+\subsection{Sales Behavior}
+The first Junit test verifies that it is not possible to add a sale to an non existent customer. 
+\begin{lstlisting}
+public void extraSaleBehaviour1() throws ApplicationException {
+	int vat = 503183504;
+	assertFalse(hasClient(vat));
+	assertThrows(ApplicationException.class, () -> {
+		SaleService.INSTANCE.addSale(vat);
+	});	
+}	
+\end{lstlisting}
+
+All new sales created for a new customer must have its date the same as of creation, a total of 0.0, an open status and it needs to be associated to the right vat.
+\begin{lstlisting}
+public void extraSaleBehaviour2() throws ApplicationException {
+	int vat = 503183504;
+	assertFalse(hasClient(vat));
+	CustomerService.INSTANCE.addCustomer(vat, "FCUL", 217500000);
+	assertTrue(hasClient(vat));
+	SaleService.INSTANCE.addSale(vat);
+	List<SaleDTO> sales = SaleService.INSTANCE.getSaleByCustomerVat(vat).sales;
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	for (SaleDTO curr : sales) {
+		assertEquals(dateFormat.format(new Date()), curr.data.toString());
+		assertEquals(new Double(0.0), curr.total);
+		assertEquals("O", curr.statusId);
+		assertEquals(vat, curr.customerVat);
+	}		
+}
+\end{lstlisting}
+\subsection{Sale Deliveries Behavior}
+
+\section{Bugs found}
+
+
+
 
 
 
