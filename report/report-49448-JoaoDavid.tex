@@ -158,7 +158,7 @@ The system allows the creation of new sales associated to VAT numbers that do no
 
 
 \subsubsection{Solution}
-Query the database using the CustomerRDGW class, in order verify if there is a customer with that VAT number.
+Within the $addSale$ method from the $SaleService$ class, use the method $getCustomerByVATNumber$ from the $CustomerRDGW$ class, to query the Customer's DB table, using his VAT number. If such customer does not exist, the system should raise an exception.
 
 
 
