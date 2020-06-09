@@ -181,6 +181,25 @@ The system allows the addition of addresses with invalid/empty parameters. For i
 Before inserting the address into the database, there should be a validation of the fields written by the user. There could also be a regular expression validation in the form itself.
 \newpage
 %------------------------------------------------------------------
+\subsection{Adding a sale delivery for a closed sale}
+The system allows the creation of a Sale Delivery for a Sale that has already been closed.
+
+\subsubsection{Reproduction}
+\begin{enumerate}
+   \item  Add a Customer
+   
+   \item  Add an address and sale for that Customer
+   
+   \item  Close the sale previously created
+   
+   \item  Create a Sale Delivery using the address and sale created previously
+\end{enumerate}
+
+
+\subsubsection{Solution}
+Before creating the Sale delivery, the system should verify that the sale chosen is still open. This could be done through the use of SaleRDGW's getSaleById method.
+\newpage
+%------------------------------------------------------------------
 \subsection{RDGW missing attribute initialization}
 The constructor of $SaleDeliveryRowDataGateway$ is not initializing the attribute $address\_id$ and the constructor of $SaleRowDataGateway$ is not initializing the attributes $total$ and $statusId$. 
 
