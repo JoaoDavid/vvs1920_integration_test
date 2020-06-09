@@ -64,9 +64,15 @@ In order to check that the report pages have the expected information, the metho
 Other methods such as getCustomers and getCustomerSales return an HtmlTable instead, for the same reasons. 
 
 All the narratives were written inside the same test class, since not all of them have the same set up and tear down rules, and to avoid having several test classes with the same WebClient setup code. The set up and tear down pieces of code where added to the top and bottom of each test method respectively, they were clearly marked with a comment, in order to better differentiate test code from set up/tear down code.
-\newpage
 
 \section{DB Setup}
+Each task from the assignment was defined in a separate test method. The last four extra tests concerning the expected behavior of sales and sale deliveries are in the bottom of the test class, with a comment block describing them. The following two pages also contain that information.
+
+The class DBTest relies on a Utils class DBSetupUtils, that is responsible for inserting some values in the database, so that to test class itself has some information to work with.
+
+
+
+\newpage
 \subsection{Sales Behavior}
 The first Junit test verifies that it is not possible to add a sale to an non existent customer. 
 \begin{lstlisting}
@@ -130,8 +136,14 @@ public void extraSaleDeliveryBehaviour2() throws ApplicationException {
 
 \newpage
 \section{Mockito}
+It's possible to mock the CustomerRDGW class. Suppose that the application layer is being developed, and the access to the data base is still not set up, or is too slow at the moment, and the programmer does not want to stop working.
 
+In this case, the class that would be using the mock is the CustomerService class, the class uses the CustomerRDGW to insert, update, get and even remove customers from the database, since we would be mocking this behavior, the mock would need to keep track of all customers in memory (instead of going to the DB).
 
+Looking at the original code, the class CustomerRDGW depends on the CustomerFinder class, in order to simplify the mocking process, the only method within the CustomerFinder class would be moved to the CustomerRDGW, this way, the CustomerRDGW would not depend from any other class and all the knowledge about the customers in the system would be in CustomerRDGW.
+
+The mock itself would rely on some data structure to "save" the instances of CustomerRDGWs "inserted" in the database. A good data structure would be a hash map, where the key would be the VAT number (unique number) and the value would the the CustomerRDGW itself, the mock class would have to implement the CustomerRDGWs methods, for instance, the addCustomer would create a new CustomerRDGW and put it in the hashmap using its VAT, and the getCustomer would get it from the hashmap using its VAT number.
+\newpage
 \section{Bugs found}
 \subsection{Customer Removal}
 After removing a registered customer from the system, its addresses, sales and sale deliveries were still kept in the database.
