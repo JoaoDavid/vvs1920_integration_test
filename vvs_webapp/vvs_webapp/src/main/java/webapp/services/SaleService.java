@@ -55,12 +55,14 @@ public enum SaleService {
 	
 	public void addSale(int customerVat) throws ApplicationException {
 		try {
+			if (!isValidVAT (customerVat)) {
+				throw new ApplicationException ("Invalid VAT number: " + customerVat);
+			}				
 			CustomerRowDataGateway.getCustomerByVATNumber(customerVat);
 			SaleRowDataGateway sale = new SaleRowDataGateway(customerVat, new Date());
-			sale.insert();
-			
+			sale.insert();			
 		} catch (PersistenceException e) {
-				throw new ApplicationException ("Can't add customer with vat number " + customerVat + ".", e);
+				throw new ApplicationException ("Can't add a sale for the customer with vat number " + customerVat + ".", e);
 		}
 	}
 	
