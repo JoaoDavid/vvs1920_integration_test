@@ -64,6 +64,8 @@ public class HtmlUnitTest {
 		utils.addCustomer(VAT_1, DESIG_1, PHONE_1);
 		//State of the table before adding the 2 new addresses
 		final HtmlTable tableBefore = utils.getCustomerAddresses(VAT_1);
+		//I used 1 instead of 0 because we have to count for the extra row
+		//that contains the column names
 		final int numRowsBefore = tableBefore==null ? 1 : tableBefore.getRowCount();
 		//Adding the 2 addresses
 		utils.addAddress(VAT_1, ADDRESS_1, DOOR_1, POSTAL_CODE_1, LOCALITY_1);
@@ -93,6 +95,8 @@ public class HtmlUnitTest {
 		int confirmedInfoCount = 0;
 		//-------------before---------
 		final HtmlTable tableBefore = utils.getCustomers();
+		//I used 1 instead of 0 because we have to count for the extra row
+		//that contains the column names
 		final int countBefore = tableBefore==null ? 1 : tableBefore.getRowCount();
 		//------------add customers---------
 		utils.addCustomer(VAT_1, DESIG_1, PHONE_1);
