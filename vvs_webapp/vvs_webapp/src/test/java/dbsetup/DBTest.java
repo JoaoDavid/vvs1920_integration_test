@@ -171,8 +171,8 @@ public class DBTest {
 	}
 
 	/**
-	 * After a close has been closed
-	 * it should not be allowed to add
+	 * After a sale has been closed
+	 * it should not be possible to add
 	 * a delivery for that sale
 	 * 
 	 * @throws ApplicationException
