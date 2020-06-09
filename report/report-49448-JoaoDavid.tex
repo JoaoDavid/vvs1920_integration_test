@@ -126,8 +126,8 @@ public void extraSaleDeliveryBehaviour2() throws ApplicationException {
 \section{Bugs found}
 \subsection{Customer Removal}
 After removing a registered customer from the system, its addresses, sales and sale deliveries were still kept in the database.
-This bug can be easily reproduced:
 
+\subsubsection{Reproduction}
 \begin{enumerate}
    \item  Create e new customer
    
@@ -144,9 +144,21 @@ This bug can be easily reproduced:
 
 
 \subsubsection{Solution}
-First implement in the Address, Sale and SaleDelivery RDGW classes, the methods responsible for deleting all addresses, sales and sale deliveries, respectively, given a customer vat number. Then, use them to delete the information in the $removeCustomer$ method in the $CustomerService$ Java class.
+First implement in the Address, Sale and SaleDelivery RDGW classes, the methods responsible for deleting all addresses, sales and sale deliveries, respectively, given a customer VAT number. Then, use them to delete the information in the $removeCustomer$ method in the $CustomerService$ Java class.
+
+\subsection{Insert new sales for non-existent customers}
+The system allows the creation of new sales associated to VAT numbers that do not belong to any customer registered in the system.
+
+\subsubsection{Reproduction}
+\begin{enumerate}
+   \item  Click on "Enter new sale"
+   
+   \item  Enter a VAT number that is not registered to any customer
+\end{enumerate}
 
 
+\subsubsection{Solution}
+Query the database using the CustomerRDGW class, in order verify if there is a customer with that VAT number.
 
 
 
