@@ -194,6 +194,8 @@ public class HtmlUnitTest {
 		HtmlTableRow rowSaleDeli = saleDeliTable.getRow(indexLatestSaleDeliv);
 		assertEquals(saleId, rowSaleDeli.getCell(1).asText());
 		assertEquals(addressId, rowSaleDeli.getCell(2).asText());
+		//showing sale delivery
+		System.out.println(addSaleDeliveryPage.asText());
 		//Tear down
 		utils.removeCustomer(VAT_1);
 	}
