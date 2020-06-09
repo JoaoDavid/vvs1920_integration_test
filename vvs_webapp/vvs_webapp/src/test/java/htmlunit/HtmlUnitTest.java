@@ -13,15 +13,11 @@ import org.junit.Test;
 
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 
 public class HtmlUnitTest {
-
-	private static final String APPLICATION_URL = "http://localhost:8080/VVS_webappdemo/";
 
 	private WebClient webClient;
 	private TestUtils utils;
@@ -72,15 +68,15 @@ public class HtmlUnitTest {
 		assertEquals(2, numRowsAfter-numRowsBefore);
 		//Verify that the table of addresses includes the new ones
 		final HtmlTableRow fstAddedRow = tableAfter.getRow(numRowsAfter-2);
-		assertEquals(address1, fstAddedRow.getCell(0).asText());
-		assertEquals(door1, fstAddedRow.getCell(1).asText());
-		assertEquals(postalCode1, fstAddedRow.getCell(2).asText());
-		assertEquals(locality1, fstAddedRow.getCell(3).asText());
+		assertEquals(address1, fstAddedRow.getCell(1).asText());
+		assertEquals(door1, fstAddedRow.getCell(2).asText());
+		assertEquals(postalCode1, fstAddedRow.getCell(3).asText());
+		assertEquals(locality1, fstAddedRow.getCell(4).asText());
 		final HtmlTableRow sndAddedRow = tableAfter.getRow(numRowsAfter-1);
-		assertEquals(address2, sndAddedRow.getCell(0).asText());
-		assertEquals(door2, sndAddedRow.getCell(1).asText());
-		assertEquals(postalCode2, sndAddedRow.getCell(2).asText());
-		assertEquals(locality2, sndAddedRow.getCell(3).asText());
+		assertEquals(address2, sndAddedRow.getCell(1).asText());
+		assertEquals(door2, sndAddedRow.getCell(2).asText());
+		assertEquals(postalCode2, sndAddedRow.getCell(3).asText());
+		assertEquals(locality2, sndAddedRow.getCell(4).asText());
 		// Tear down
 		utils.removeCustomer(vat);
 	}
@@ -165,53 +161,43 @@ public class HtmlUnitTest {
 	public void narrativeE() throws IOException {
 		// Add Customer
 		final String vat = "229122205";
-		utils.addCustomer(vat, "narrativeE", "910576931");
-		final String address1 = "Rua Augusta";
-		final String door1 = "9";
-		final String postalCode1 = "1100-048";
-		final String locality1 = "Lisboa";
-		utils.addAddress(vat, address1, door1, postalCode1, locality1);
+		final String desig  = "narrativeE";
+		final String phone = "910576931";
+		HtmlPage addCustomerPage = utils.addCustomer(vat, desig, phone);
+		String textReportPage = addCustomerPage.asText();
+		assertTrue(textReportPage.contains(desig));
+		assertTrue(textReportPage.contains(phone));
+		//Add address
+		final String address = "Rua Augusta";
+		final String door = "9";
+		final String postalCode = "1100-048";
+		final String locality = "Lisboa";		
+		HtmlPage addAddressPage = utils.addAddress(vat, address, door, postalCode, locality);
+		HtmlTable tableAddresses = (HtmlTable) addAddressPage.getElementById("addresses");
+		int indexLatestAddresses = tableAddresses.getRows().size() - 1;
+		HtmlTableRow rowAddress = tableAddresses.getRow(indexLatestAddresses);
+		final String addressId = rowAddress.getCell(0).asText();
+		assertEquals(address, rowAddress.getCell(1).asText());
+		assertEquals(door, rowAddress.getCell(2).asText());
+		assertEquals(postalCode, rowAddress.getCell(3).asText());
+		assertEquals(locality, rowAddress.getCell(4).asText());
 		// Add Sale
-		utils.addSale(vat);
-		final HtmlTable table = utils.getCustomerSales(vat);
-		int indexLatest = table.getRows().size() - 1;
-		HtmlTableRow row = table.getRow(indexLatest);
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd"); 
+		HtmlPage addASalePage = utils.addSale(vat);
+		HtmlTable tableSales = (HtmlTable) addASalePage.getElementById("sales");
+		int indexLatestSales = tableSales.getRows().size() - 1;
+		HtmlTableRow row = tableSales.getRow(indexLatestSales);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd");
+		final String saleId = row.getCell(0).asText();
 		assertEquals(formatter.format(LocalDate.now()), row.getCell(1).asText());
 		assertEquals("0.0", row.getCell(2).asText());
 		assertEquals("O", row.getCell(3).asText());
-		assertEquals(vat, row.getCell(4).asText());
+		assertEquals(vat, row.getCell(4).asText());	
+		//Add Sale Delivery
+		HtmlPage addSaleDeliveryPage = utils.addSaleDelivery(vat, saleId, addressId);		
+		HtmlTable saleDeliTable = (HtmlTable) addSaleDeliveryPage.getElementById("salesDelivery");
 		
-		//Insert delivery
-		HtmlPage page = webClient.getPage(APPLICATION_URL + "saleDeliveryVat.html");
-		// get the page first form:
-		HtmlForm findCustomerForm = page.getForms().get(0);
-		// place data at form
-		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
-		vatInput.setValueAttribute(vat);
-		// submit form
-		HtmlInput submit = findCustomerForm.getInputByValue("Get Customer");
-		HtmlPage reportPage = submit.click();
-		
-		HtmlTable tableAddresses = (HtmlTable) reportPage.getElementById("addresses");
-		String addressId = tableAddresses.getRow(1).getCell(0).asText();
-		
-		HtmlTable tableSales = (HtmlTable) reportPage.getElementById("sales");
-		String saleId = tableSales.getRow(1).getCell(0).asText();
-		
-		HtmlForm addSaleDeliveryForm = reportPage.getForms().get(0);
-		HtmlInput addressInput = addSaleDeliveryForm.getInputByName("addr_id");
-		addressInput.setValueAttribute(addressId);
-		HtmlInput saleInput = addSaleDeliveryForm.getInputByName("sale_id");
-		saleInput.setValueAttribute(saleId);
-
-		HtmlInput submitNext = addSaleDeliveryForm.getInputByValue("Insert");
-		submitNext.click();
-		
-		//Verify it in the sale delivery
-		HtmlTable saleDeliTable = utils.getCustomerSaleDeliveries(vat);
-		int lastIndexsaleDeli = saleDeliTable.getRows().size() - 1;
-		HtmlTableRow rowSaleDeli = saleDeliTable.getRow(lastIndexsaleDeli);
+		int indexLatestSaleDeliv = saleDeliTable.getRows().size() - 1;
+		HtmlTableRow rowSaleDeli = saleDeliTable.getRow(indexLatestSaleDeliv);
 		assertEquals(saleId, rowSaleDeli.getCell(1).asText());
 		assertEquals(addressId, rowSaleDeli.getCell(2).asText());
 		//Tear down

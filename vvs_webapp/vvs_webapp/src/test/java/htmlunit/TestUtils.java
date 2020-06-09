@@ -104,7 +104,7 @@ public class TestUtils {
 		HtmlInput submit = addSaleForm.getInputByValue("Add Sale");
 		return submit.click();
 	}
-	
+
 	public HtmlPage closeSale(String id) throws IOException {
 		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "UpdateSaleStatusPageControler");
 
@@ -135,8 +135,35 @@ public class TestUtils {
 		HtmlTable table = (HtmlTable) reportPage.getElementById("sales");
 		return table;
 	}
-	
-	
+
+	public HtmlPage addSaleDelivery(String vat, String saleId, String addressId) throws IOException {
+		HtmlPage page = webClient.getPage(TestUtils.APPLICATION_URL + "saleDeliveryVat.html");
+		// get the page first form:
+		HtmlForm findCustomerForm = page.getForms().get(0);
+		// place data at form
+		HtmlInput vatInput = findCustomerForm.getInputByName("vat");
+		vatInput.setValueAttribute(vat);
+		// submit form
+		HtmlInput submit = findCustomerForm.getInputByValue("Get Customer");
+		HtmlPage reportPage = submit.click();
+
+		/*HtmlTable tableAddresses = (HtmlTable) reportPage.getElementById("addresses");
+		String addressId = tableAddresses.getRow(1).getCell(0).asText();*/
+
+		/*HtmlTable tableSales = (HtmlTable) reportPage.getElementById("sales");
+		String saleId = tableSales.getRow(1).getCell(0).asText();*/
+
+		HtmlForm addSaleDeliveryForm = reportPage.getForms().get(0);
+		HtmlInput addressInput = addSaleDeliveryForm.getInputByName("addr_id");
+		addressInput.setValueAttribute(addressId);
+		HtmlInput saleInput = addSaleDeliveryForm.getInputByName("sale_id");
+		saleInput.setValueAttribute(saleId);
+
+		HtmlInput submitNext = addSaleDeliveryForm.getInputByValue("Insert");
+		return submitNext.click();
+	}
+
+
 	public HtmlTable getCustomerSaleDeliveries(String vat) throws IOException {
 		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "showDelivery.html");
 		// get the page first form:

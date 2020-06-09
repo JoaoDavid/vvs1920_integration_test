@@ -26,14 +26,16 @@
 <br>
 <c:if test = "${addressesHelper.getAddresses().size() > 0}">
 	<table id="addresses" class="w3-table w3-bordered">
-	<tr class="w3-black">
+	   <tr class="w3-black">
+		<th>Id</th>
 		<th>Address</th>
 		<th>Door</th>
 		<th>Postal Code</th>
 		<th>Locality</th>
 	</tr>
 	<c:forEach var="addr" items="${addressesHelper.getAddresses()}">
-		<tr class="w3-black">
+       <tr class="w3-blue-grey">
+       		<td>${addr.getId()}</td>
 			<td>${addr.getAddress().split(";")[0]}</td>
 			<td>${addr.getAddress().split(";")[1]}</td>
 			<td>${addr.getAddress().split(";")[2]}</td>
