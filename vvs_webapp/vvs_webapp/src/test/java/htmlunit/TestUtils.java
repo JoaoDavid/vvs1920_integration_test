@@ -1,8 +1,5 @@
 package htmlunit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -13,7 +10,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlTable;
 
 public class TestUtils {
 
-	private static final String APPLICATION_URL = "http://localhost:8080/VVS_webappdemo/";
+	public static final String APPLICATION_URL = "http://localhost:8080/VVS_webappdemo/";
 
 	private WebClient webClient;	
 
@@ -21,10 +18,8 @@ public class TestUtils {
 		this.webClient = webClient;
 	}
 
-	public void addCustomer(String vat, String desig, String phone) throws IOException {
+	public HtmlPage addCustomer(String vat, String desig, String phone) throws IOException {
 		HtmlPage page = webClient.getPage(APPLICATION_URL + "addCustomer.html");
-		// check if title is the one expected
-		assertEquals("Enter Name", page.getTitleText());
 
 		// get the page first form:
 		HtmlForm addCustomerForm = page.getForms().get(0);
@@ -38,19 +33,11 @@ public class TestUtils {
 		phoneInput.setValueAttribute(phone);
 		// submit form
 		HtmlInput submit = addCustomerForm.getInputByName("submit");
-
-		// check if report page includes the proper values
-		HtmlPage reportPage = submit.click();
-		String textReportPage = reportPage.asText();
-		assertTrue(textReportPage.contains(desig));
-		assertTrue(textReportPage.contains(phone));
-
+		return submit.click();
 	}
 
-	public void addAddress(String vat, String address, String door, String postalCode, String locality) throws IOException {
+	public HtmlPage addAddress(String vat, String address, String door, String postalCode, String locality) throws IOException {
 		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "addAddressToCustomer.html");
-		// check if title is the one expected
-		assertEquals("Enter Address", nextPage.getTitleText());
 
 		// get the page first form:
 		HtmlForm addAddressForm = nextPage.getForms().get(0);
@@ -68,20 +55,17 @@ public class TestUtils {
 		localityInput.setValueAttribute(locality);
 		// submit form
 		HtmlInput submit = addAddressForm.getInputByValue("Insert");
-
-		// check if report page includes the proper values
-		submit.click();
+		return submit.click();
 	}
 
-	public void removeCustomer(String vat) throws IOException {
+	public HtmlPage removeCustomer(String vat) throws IOException {
 		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "RemoveCustomerPageController");
-		assertTrue(nextPage.asText().contains(vat));
 
 		HtmlForm removeCustomerForm = nextPage.getForms().get(0);
 		HtmlInput vatInput = removeCustomerForm.getInputByName("vat");
 		vatInput.setValueAttribute(vat);
 		HtmlInput submit = removeCustomerForm.getInputByName("submit");
-		submit.click();
+		return submit.click();
 	}
 
 	public HtmlTable getCustomerAddresses(String vat) throws IOException {
@@ -106,10 +90,8 @@ public class TestUtils {
 		return table;
 	}
 
-	public void addSale(String vat) throws IOException {
+	public HtmlPage addSale(String vat) throws IOException {
 		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "addSale.html");
-		// check if title is the one expected
-		assertEquals("New Sale", nextPage.getTitleText());
 
 		// get the page first form:
 		HtmlForm addSaleForm = nextPage.getForms().get(0);
@@ -120,12 +102,10 @@ public class TestUtils {
 
 		// submit form
 		HtmlInput submit = addSaleForm.getInputByValue("Add Sale");
-
-		// check if report page includes the proper values
-		submit.click();
+		return submit.click();
 	}
 	
-	public void closeSale(String id) throws IOException {
+	public HtmlPage closeSale(String id) throws IOException {
 		HtmlPage nextPage = webClient.getPage(APPLICATION_URL + "UpdateSaleStatusPageControler");
 
 		// get the page first form:
@@ -137,9 +117,7 @@ public class TestUtils {
 
 		// submit form
 		HtmlInput submit = closeSaleForm.getInputByValue("Close Sale");
-
-		// check if report page includes the proper values
-		submit.click();
+		return submit.click();
 	}
 
 	public HtmlTable getCustomerSales(String vat) throws IOException {
