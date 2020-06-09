@@ -145,6 +145,7 @@ After removing a registered customer from the system, its addresses, sales and s
 
 \subsubsection{Solution}
 First implement in the Address, Sale and SaleDelivery RDGW classes, the methods responsible for deleting all addresses, sales and sale deliveries, respectively, given a customer VAT number. Then, use them to delete the information in the $removeCustomer$ method in the $CustomerService$ Java class.
+\newpage
 %------------------------------------------------------------------
 \subsection{Insert new sales for non-existent customers}
 The system allows the creation of new sales associated to VAT numbers that do not belong to any customer registered in the system.
@@ -159,6 +160,26 @@ The system allows the creation of new sales associated to VAT numbers that do no
 
 \subsubsection{Solution}
 Within the $addSale$ method from the $SaleService$ class, use the method $getCustomerByVATNumber$ from the $CustomerRDGW$ class, to query the Customer's DB table, using his VAT number. If such customer does not exist, the system should raise an exception.
+
+%------------------------------------------------------------------
+\subsection{Adding an address}
+The system allows the addition of addresses with invalid/empty parameters. For instance, one could add an address empty address or even an address where the zip code has no numbers, or a locality that is only numbers.
+
+\subsubsection{Reproduction}
+\begin{enumerate}
+   \item  Click on "Insert new Address to Customer"
+   
+   \item  Enter a VAT number that is registered to a customer
+   
+   \item  Fill the fields with wrong values, or leave them empty
+   
+   \item  Insert the address
+\end{enumerate}
+
+
+\subsubsection{Solution}
+Before inserting the address into the database, there should be a validation of the fields written by the user. There could also be a regular expression validation in the form itself.
+\newpage
 %------------------------------------------------------------------
 \subsection{RDGW missing attribute initialization}
 The constructor of $SaleDeliveryRowDataGateway$ is not initializing the attribute $address\_id$ and the constructor of $SaleRowDataGateway$ is not initializing the attributes $total$ and $statusId$. 
@@ -166,6 +187,13 @@ The constructor of $SaleDeliveryRowDataGateway$ is not initializing the attribut
 
 \subsubsection{Solution}
 Using the ResultSet object passed to the constructor, initialize the previously mentioned attributes.
+%------------------------------------------------------------------
+\subsection{Creation of unnecessary objects}
+The RDGW classes have empty constructors, that are being used to create RDGW objects in order to use their instance methods. This is a bad practice, this methods should be re factored to static, and the empty constructors removed. The methods in particular are getters, that return a RDGW object, or a list of RDGW's. 
+
+
+\subsubsection{Solution}
+Remove all RDGW empty constructors, then the Eclipse IDE will signal the places where they were previously used to invoke instance methods, change those methods to static, and then instead of using "new xRDGW().get..." use "xRDGW.get...".
 
 
 
