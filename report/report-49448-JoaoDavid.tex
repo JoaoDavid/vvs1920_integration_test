@@ -145,7 +145,7 @@ After removing a registered customer from the system, its addresses, sales and s
 
 \subsubsection{Solution}
 First implement in the Address, Sale and SaleDelivery RDGW classes, the methods responsible for deleting all addresses, sales and sale deliveries, respectively, given a customer VAT number. Then, use them to delete the information in the $removeCustomer$ method in the $CustomerService$ Java class.
-
+%------------------------------------------------------------------
 \subsection{Insert new sales for non-existent customers}
 The system allows the creation of new sales associated to VAT numbers that do not belong to any customer registered in the system.
 
@@ -159,8 +159,13 @@ The system allows the creation of new sales associated to VAT numbers that do no
 
 \subsubsection{Solution}
 Within the $addSale$ method from the $SaleService$ class, use the method $getCustomerByVATNumber$ from the $CustomerRDGW$ class, to query the Customer's DB table, using his VAT number. If such customer does not exist, the system should raise an exception.
+%------------------------------------------------------------------
+\subsection{RDGW missing attribute initialization}
+The constructor of $SaleDeliveryRowDataGateway$ is not initializing the attribute $address\_id$ and the constructor of $SaleRowDataGateway$ is not initializing the attributes $total$ and $statusId$. 
 
 
+\subsubsection{Solution}
+Using the ResultSet object passed to the constructor, initialize the previously mentioned attributes.
 
 
 
