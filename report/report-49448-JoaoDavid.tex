@@ -118,8 +118,33 @@ public void extraSaleDeliveryBehaviour2() throws ApplicationException {
 		.getSalesDeliveryByVat(vat).sales_delivery.size());
 }
 \end{lstlisting}
-\section{Bugs found}
 
+\newpage
+\section{Mockito}
+
+
+\section{Bugs found}
+\subsection{Customer Removal}
+After removing a registered customer from the system, its addresses, sales and sale deliveries were still kept in the database.
+This bug can be easily reproduced:
+
+\begin{enumerate}
+   \item  Create e new customer
+   
+   \item  Add an address
+   
+   \item  Insert a new sale
+   
+   \item  Insert a new sale delivery using the previous two information
+      
+   \item  Remove the customer
+      
+   \item  Use the customer's vat number to search for sales/sale deliveries
+\end{enumerate}
+
+
+\subsubsection{Solution}
+First implement in the Address, Sale and SaleDelivery RDGW classes, the methods responsible for deleting all addresses, sales and sale deliveries, respectively, given a customer vat number. Then, use them to delete the information in the $removeCustomer$ method in the $CustomerService$ Java class.
 
 
 
